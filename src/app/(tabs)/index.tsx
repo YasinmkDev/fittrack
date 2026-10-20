@@ -1,10 +1,14 @@
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import {
   AlarmClock,
   Bell,
+  Check,
   ChevronRight,
   CircleAlert,
+  Flame,
   Moon,
   Sparkles,
   UserCheck,
@@ -14,11 +18,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnimatedIn } from '../../components/AnimatedIn';
 import { AnimatedNumber } from '../../components/AnimatedNumber';
 import { AttendanceBars } from '../../components/AttendanceBars';
+import { Avatar } from '../../components/Avatar';
 import { Card } from '../../components/Card';
 import { ClassCard } from '../../components/ClassCard';
 import { Ring } from '../../components/Ring';
 import { SectionTitle } from '../../components/Section';
-import { CLASSES_TODAY, GYM } from '../../data/seed';
+import { CLASSES_TODAY, GYM, MEMBERS } from '../../data/seed';
 import { rs, rsCompact } from '../../lib/format';
 import { theme } from '../../theme/theme';
 
@@ -26,6 +31,21 @@ export default function HomeScreen() {
   const feesPct = GYM.feesCollected / GYM.feesTarget;
   const liveClass = CLASSES_TODAY.find((c) => c.state === 'live');
   const nextClass = CLASSES_TODAY.find((c) => c.state === 'upcoming');
+
+  // Hook loop, live on this screen: trigger (expected now) → one-tap action
+  // (check-in) → reward (counts tick, streak shows) → investment (attendance data).
+  const [inGym, setInGym] = useState(GYM.inGymNow);
+  const [checkins, setCheckins] = useState(GYM.checkinsToday);
+  const [checkedIn, setCheckedIn] = useState<string[]>([]);
+  const expectedNow = MEMBERS.filter((m) => GYM.expectedNowIds.includes(m.id));
+
+  const checkIn = (memberId: string) => {
+    if (checkedIn.includes(memberId)) return;
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setCheckedIn((prev) => [...prev, memberId]);
+    setInGym((n) => n + 1);
+    setCheckins((n) => n + 1);
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -59,15 +79,11 @@ export default function HomeScreen() {
                 <Text style={styles.liveLabel}>IN THE GYM NOW</Text>
               </View>
               <View style={styles.liveCountRow}>
-                <AnimatedNumber
-                  value={GYM.inGymNow}
-                  format={(n) => `${n}`}
-                  style={styles.liveCount}
-                />
+                <AnimatedNumber value={inGym} format={(n) => `${n}`} style={styles.liveCount} />
                 <Text style={styles.liveCapacity}>/ {GYM.capacityNow} capacity</Text>
               </View>
               <Text style={styles.liveSub}>
-                {GYM.checkinsToday} check-ins today · Peak expected 6–8 PM
+                {checkins} check-ins today · Peak expected 6–8 PM
               </Text>
               <View style={styles.statRow}>
                 <View style={styles.stat}>
@@ -90,6 +106,47 @@ export default function HomeScreen() {
         </AnimatedIn>
 
         <AnimatedIn index={2}>
+          <SectionTitle title="Expected now — one tap to check in" />
+          <Card padded={false} style={styles.checkinCard}>
+            {expectedNow.map((member, i) => {
+              const isIn = checkedIn.includes(member.id);
+              return (
+                <View
+                  key={member.id}
+                  style={[styles.checkinRow, i > 0 && styles.checkinDivider]}>
+                  <Avatar name={member.name} size={40} />
+                  <View style={styles.checkinMain}>
+                    <Text style={styles.checkinName} numberOfLines={1}>
+                      {member.name}
+                    </Text>
+                    <View style={styles.checkinMetaRow}>
+                      <Flame size={12} color={theme.colors.accent} />
+                      <Text style={styles.checkinMeta}>
+                        {member.streakWeeks} wk streak · usually in by now
+                      </Text>
+                    </View>
+                  </View>
+                  <Pressable
+                    onPress={() => checkIn(member.id)}
+                    disabled={isIn}
+                    accessibilityRole="button"
+                    accessibilityLabel={
+                      isIn ? `${member.name} checked in` : `Check in ${member.name}`
+                    }
+                    style={[styles.checkinBtn, isIn && styles.checkinBtnDone]}>
+                    {isIn ? (
+                      <Check size={16} color="#FFFFFF" strokeWidth={3} />
+                    ) : (
+                      <Text style={styles.checkinBtnLabel}>Check in</Text>
+                    )}
+                  </Pressable>
+                </View>
+              );
+            })}
+          </Card>
+        </AnimatedIn>
+
+        <AnimatedIn index={3}>
           <Card style={styles.feesCard}>
             <View style={styles.feesMain}>
               <Text style={styles.label}>Fees collected this month</Text>
@@ -104,7 +161,7 @@ export default function HomeScreen() {
           </Card>
         </AnimatedIn>
 
-        <AnimatedIn index={3}>
+        <AnimatedIn index={4}>
           <SectionTitle title="Needs your attention" />
           <Card padded={false} style={styles.attentionCard}>
             <AttentionRow
@@ -133,7 +190,18 @@ export default function HomeScreen() {
           </Card>
         </AnimatedIn>
 
-        <AnimatedIn index={4}>
+        <AnimatedIn index={5}>
+          <Card style={styles.insightCard}>
+            <View style={styles.insightHead}>
+              <Sparkles size={16} color={theme.colors.accent} />
+              <Text style={styles.insightTitle}>YOUR GYM, IN ONE LINE</Text>
+            </View>
+            <Text style={styles.insightText}>{GYM.insight}</Text>
+            <Text style={styles.insightCaption}>From this week's check-ins and fee data</Text>
+          </Card>
+        </AnimatedIn>
+
+        <AnimatedIn index={6}>
           <SectionTitle title="Attendance" />
           <Card>
             <Text style={styles.chartTitle}>Check-ins — last 7 days</Text>
@@ -141,7 +209,7 @@ export default function HomeScreen() {
           </Card>
         </AnimatedIn>
 
-        <AnimatedIn index={5}>
+        <AnimatedIn index={7}>
           <SectionTitle
             title="Today's classes"
             actionLabel="Schedule"
@@ -151,7 +219,7 @@ export default function HomeScreen() {
           {nextClass && <ClassCard gymClass={nextClass} />}
         </AnimatedIn>
 
-        <AnimatedIn index={6}>
+        <AnimatedIn index={8}>
           <Pressable
             onPress={() => router.push('/paywall')}
             accessibilityRole="button"
@@ -169,7 +237,7 @@ export default function HomeScreen() {
           </Pressable>
         </AnimatedIn>
 
-        <AnimatedIn index={7}>
+        <AnimatedIn index={9}>
           <View style={styles.footerNote}>
             <UserCheck size={14} color={theme.colors.textTertiary} />
             <Text style={styles.footerText}>
@@ -353,6 +421,67 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSize.caption,
     color: theme.colors.textSecondary,
     marginBottom: theme.spacing.md,
+  },
+  checkinCard: { paddingHorizontal: theme.spacing.xl, overflow: 'hidden' },
+  checkinRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+    paddingVertical: theme.spacing.lg,
+    minHeight: 68,
+  },
+  checkinDivider: { borderTopWidth: 1, borderTopColor: theme.colors.border },
+  checkinMain: { flex: 1 },
+  checkinName: {
+    fontSize: theme.fontSize.small,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+  },
+  checkinMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginTop: 2,
+  },
+  checkinMeta: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary },
+  checkinBtn: {
+    minWidth: 88,
+    minHeight: 44,
+    borderRadius: theme.radii.pill,
+    backgroundColor: theme.colors.accent,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: theme.spacing.lg,
+  },
+  checkinBtnDone: { backgroundColor: theme.colors.success, minWidth: 44 },
+  checkinBtnLabel: {
+    color: '#FFFFFF',
+    fontSize: theme.fontSize.caption,
+    fontWeight: theme.fontWeight.bold,
+  },
+  insightCard: { marginTop: theme.spacing.md },
+  insightHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    marginBottom: theme.spacing.sm,
+  },
+  insightTitle: {
+    fontSize: 12,
+    fontWeight: theme.fontWeight.bold,
+    letterSpacing: 1.1,
+    color: theme.colors.accent,
+  },
+  insightText: {
+    fontSize: theme.fontSize.body,
+    lineHeight: 23,
+    color: theme.colors.text,
+    fontWeight: theme.fontWeight.medium,
+  },
+  insightCaption: {
+    fontSize: 12,
+    color: theme.colors.textTertiary,
+    marginTop: theme.spacing.sm,
   },
   proBanner: {
     flexDirection: 'row',

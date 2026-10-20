@@ -397,6 +397,11 @@ export const GYM = {
   /** check-ins per day, Mon..Sun; last entry is today */
   attendanceWeek: [64, 78, 71, 92, 84, 96, 86],
   attendanceDays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  /** Algorithmic-intimacy line: computed for this gym only, from its own data. */
+  insight:
+    'Evenings are your power hours — most check-ins land between 5 and 8 PM. Saturday is your biggest day, and Imran Ullah is the only regular who has gone quiet this month.',
+  /** Members expected at the desk now — the one-tap check-in row. */
+  expectedNowIds: ['m7', 'm2', 'm4'],
 };
 
 export function planById(id: string): Plan {
