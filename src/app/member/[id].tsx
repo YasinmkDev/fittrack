@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { Check, Flame, NotebookPen } from 'lucide-react-native';
+import { Check, Flame, NotebookPen, Share2, Sparkles } from 'lucide-react-native';
 
 import { AnimatedIn } from '../../components/AnimatedIn';
 import { Avatar } from '../../components/Avatar';
@@ -20,6 +20,7 @@ export default function MemberScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [reminderSent, setReminderSent] = useState(false);
   const [renewed, setRenewed] = useState(false);
+  const [cardShared, setCardShared] = useState(false);
   const member = memberById(id ?? '');
 
   if (!member) {
@@ -163,6 +164,63 @@ export default function MemberScreen() {
       )}
 
       <AnimatedIn index={4}>
+        <Card style={styles.intimacyCard}>
+          <View style={styles.intimacyHead}>
+            <Sparkles size={15} color={theme.colors.accent} />
+            <Text style={styles.intimacyTitle}>ABOUT {member.name.split(' ')[0].toUpperCase()}</Text>
+          </View>
+          <Text style={styles.intimacyText}>
+            {member.weightSeries.length > 1
+              ? `${weightDelta <= 0 ? 'Down' : 'Up'} ${Math.abs(weightDelta)} kg since ${member.weightSeries[0].label}, training on a ${member.streakWeeks}-week streak with ${member.visitsThisMonth} visits this month. This progress is ${member.name.split(' ')[0]}'s — and it is worth showing off.`
+              : `Just getting started: ${member.visitsThisMonth} visits in the first month and a ${member.streakWeeks}-week streak already. Early consistency like this is what sticks.`}
+          </Text>
+        </Card>
+      </AnimatedIn>
+
+      <AnimatedIn index={5}>
+        <SectionTitle title="Progress card — made to be shared" />
+        <View style={styles.shareCard}>
+          <Text style={styles.shareGym}>POWERHOUSE GYM · MINGORA</Text>
+          <Text style={styles.shareResult}>
+            {member.weightSeries.length > 1
+              ? `${weightDelta <= 0 ? '−' : '+'}${Math.abs(weightDelta)} kg`
+              : `${member.streakWeeks}-week streak`}
+          </Text>
+          <Text style={styles.shareSub}>
+            {member.name} · {member.goal} · since {member.weightSeries[0]?.label ?? member.joined}
+          </Text>
+          <View style={styles.shareFooter}>
+            <Flame size={13} color={theme.colors.accent} />
+            <Text style={styles.shareFooterText}>
+              {member.streakWeeks} week streak · Progress tracked with FitTrack
+            </Text>
+          </View>
+        </View>
+        {cardShared ? (
+          <View style={styles.sentRow}>
+            <View style={styles.sentIcon}>
+              <Check size={13} color="#FFFFFF" strokeWidth={3} />
+            </View>
+            <Text style={styles.sentText}>Card sent to {member.name.split(' ')[0]} on WhatsApp</Text>
+          </View>
+        ) : (
+          <View style={styles.actionBtn}>
+            <PrimaryButton
+              label="Send card to member"
+              onPress={() => setCardShared(true)}
+              accessibilityLabel={`Send progress card to ${member.name}`}
+            />
+          </View>
+        )}
+        <View style={styles.shareHintRow}>
+          <Share2 size={13} color={theme.colors.textTertiary} />
+          <Text style={styles.shareHint}>
+            Members post these themselves — the gym's results advertise the gym.
+          </Text>
+        </View>
+      </AnimatedIn>
+
+      <AnimatedIn index={6}>
         <SectionTitle title="Coach note" />
         <Card style={styles.noteCard}>
           <NotebookPen size={18} color={theme.colors.accentDark} />
@@ -300,6 +358,64 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: theme.spacing.md,
   },
+  intimacyCard: { marginTop: theme.spacing.xs },
+  intimacyHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    marginBottom: theme.spacing.sm,
+  },
+  intimacyTitle: {
+    fontSize: 12,
+    fontWeight: theme.fontWeight.bold,
+    letterSpacing: 1.1,
+    color: theme.colors.accent,
+  },
+  intimacyText: {
+    fontSize: theme.fontSize.small,
+    lineHeight: 20,
+    color: theme.colors.text,
+  },
+  shareCard: {
+    backgroundColor: theme.colors.ink,
+    borderRadius: theme.radii.lg,
+    padding: theme.spacing.xl,
+  },
+  shareGym: {
+    fontSize: 11,
+    fontWeight: theme.fontWeight.bold,
+    letterSpacing: 1.6,
+    color: theme.colors.accent,
+  },
+  shareResult: {
+    fontSize: 44,
+    fontWeight: theme.fontWeight.extrabold,
+    color: '#FFFFFF',
+    marginTop: theme.spacing.md,
+  },
+  shareSub: {
+    fontSize: theme.fontSize.small,
+    color: '#D8D3CB',
+    marginTop: theme.spacing.xs,
+  },
+  shareFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    marginTop: theme.spacing.xl,
+    paddingTop: theme.spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: '#2E2B28',
+  },
+  shareFooterText: { fontSize: 12, color: '#D8D3CB', fontWeight: theme.fontWeight.medium },
+  shareHintRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    marginTop: theme.spacing.md,
+    paddingHorizontal: theme.spacing.xs,
+  },
+  shareHint: { flex: 1, fontSize: 12, color: theme.colors.textTertiary, lineHeight: 17 },
   noteText: { flex: 1, fontSize: theme.fontSize.small, color: theme.colors.text, lineHeight: 20 },
   detailCard: {},
   specRow: {
