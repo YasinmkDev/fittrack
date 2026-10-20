@@ -15,6 +15,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnimatedIn } from '../../components/AnimatedIn';
 import { GhostButton, PrimaryButton } from '../../components/Buttons';
 import { Card } from '../../components/Card';
+import { ProgressBar } from '../../components/ProgressBar';
+import { Ring } from '../../components/Ring';
 import { SectionTitle } from '../../components/Section';
 import { GOALS, PLANS, TRAINERS } from '../../data/seed';
 import { rs } from '../../lib/format';
@@ -53,9 +55,11 @@ export default function JoinScreen() {
     return (
       <SafeAreaView style={styles.safe} edges={['top']}>
         <View style={styles.successWrap}>
-          <View style={styles.successIcon}>
-            <Check size={30} color="#FFFFFF" strokeWidth={3} />
-          </View>
+          <AnimatedIn index={0}>
+            <Ring value={1} size={92} strokeWidth={6}>
+              <Check size={34} color={theme.colors.success} strokeWidth={3} />
+            </Ring>
+          </AnimatedIn>
           <Text style={styles.successTitle}>{joinedName} is in.</Text>
           <Text style={styles.successText}>
             {plan.name} plan with {trainer}. {rs(totalDue)} collected today ({rs(plan.price)} plan +{' '}
@@ -82,6 +86,20 @@ export default function JoinScreen() {
             <Text style={styles.subtitle}>
               Under a minute at the front desk. Fee is collected now.
             </Text>
+            <View style={styles.stepsWrap}>
+              <View style={styles.stepsRow}>
+                <Text style={[styles.stepLabel, styles.stepLabelActive]}>1 · Details</Text>
+                <Text style={[styles.stepLabel, styles.stepLabelDone]}>
+                  2 · Plan — already picked
+                </Text>
+                <Text style={styles.stepLabel}>3 · Done</Text>
+              </View>
+              <ProgressBar value={name.trim() ? 0.66 : 0.33} height={5} />
+              <Text style={styles.stepsCaption}>
+                You start at step 2 of 3 — the plan and trainer most members choose are
+                pre-selected. Change anything below.
+              </Text>
+            </View>
           </View>
 
           <AnimatedIn index={0}>
@@ -214,6 +232,26 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { padding: theme.spacing.xl, paddingBottom: theme.spacing.xxxl },
   header: { marginBottom: theme.spacing.xl },
+  stepsWrap: { marginTop: theme.spacing.xl },
+  stepsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: theme.spacing.sm,
+    gap: theme.spacing.sm,
+  },
+  stepLabel: {
+    fontSize: 12,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.textTertiary,
+  },
+  stepLabelActive: { color: theme.colors.text },
+  stepLabelDone: { color: theme.colors.accent },
+  stepsCaption: {
+    fontSize: 12,
+    color: theme.colors.textSecondary,
+    lineHeight: 17,
+    marginTop: theme.spacing.sm,
+  },
   title: {
     fontSize: theme.fontSize.display,
     fontWeight: theme.fontWeight.bold,
