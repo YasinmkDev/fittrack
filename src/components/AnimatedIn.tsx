@@ -9,11 +9,18 @@ interface AnimatedInProps {
   style?: ViewStyle;
 }
 
-/** The one entrance motion used across the whole app: fade + 8px rise, 220ms. */
+/**
+ * The one entrance motion used across the whole app — fluid edition.
+ * Spring physics (slight overshoot, settles fast) instead of a fixed-duration
+ * tween: it feels physical rather than programmed, and stays well inside the
+ * Doherty threshold. Fade + small rise, staggered 40ms, capped for long lists.
+ */
 export function AnimatedIn({ children, index = 0, style }: AnimatedInProps) {
   const delay = Math.min(index, 8) * 40;
   return (
-    <Animated.View entering={FadeInDown.duration(220).delay(delay)} style={[styles.wrap, style]}>
+    <Animated.View
+      entering={FadeInDown.delay(delay).springify().damping(17).stiffness(210).mass(0.72)}
+      style={[styles.wrap, style]}>
       {children}
     </Animated.View>
   );

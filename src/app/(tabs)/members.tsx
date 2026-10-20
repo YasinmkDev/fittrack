@@ -2,9 +2,9 @@ import { useMemo, useState } from 'react';
 import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
 import { SearchX } from 'lucide-react-native';
+import Animated, { FadeInDown, FadeOut, LinearTransition } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIn } from '../../components/AnimatedIn';
 import { MemberCard } from '../../components/MemberCard';
 import { GYM, MEMBERS, type MemberStatus } from '../../data/seed';
 import { theme } from '../../theme/theme';
@@ -69,9 +69,16 @@ export default function MembersScreen() {
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
         renderItem={({ item, index }) => (
-          <AnimatedIn index={index}>
+          <Animated.View
+            entering={FadeInDown.delay(Math.min(index, 8) * 40)
+              .springify()
+              .damping(17)
+              .stiffness(210)
+              .mass(0.72)}
+            layout={LinearTransition.springify().damping(19).stiffness(220)}
+            exiting={FadeOut.duration(140)}>
             <MemberCard member={item} onPress={() => router.push(`/member/${item.id}`)} />
-          </AnimatedIn>
+          </Animated.View>
         )}
         ListEmptyComponent={
           <View style={styles.empty}>
