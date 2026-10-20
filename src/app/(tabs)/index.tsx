@@ -82,9 +82,7 @@ export default function HomeScreen() {
                 <AnimatedNumber value={inGym} format={(n) => `${n}`} style={styles.liveCount} />
                 <Text style={styles.liveCapacity}>/ {GYM.capacityNow} capacity</Text>
               </View>
-              <Text style={styles.liveSub}>
-                {checkins} check-ins today · Peak expected 6–8 PM
-              </Text>
+              <Text style={styles.liveSub}>{checkins} check-ins today · Peak expected 6–8 PM</Text>
               <View style={styles.statRow}>
                 <View style={styles.stat}>
                   <Text style={styles.statValue}>{GYM.totalMembers}</Text>
@@ -111,9 +109,7 @@ export default function HomeScreen() {
             {expectedNow.map((member, i) => {
               const isIn = checkedIn.includes(member.id);
               return (
-                <View
-                  key={member.id}
-                  style={[styles.checkinRow, i > 0 && styles.checkinDivider]}>
+                <View key={member.id} style={[styles.checkinRow, i > 0 && styles.checkinDivider]}>
                   <Avatar name={member.name} size={40} />
                   <View style={styles.checkinMain}>
                     <Text style={styles.checkinName} numberOfLines={1}>
@@ -133,7 +129,8 @@ export default function HomeScreen() {
                     accessibilityLabel={
                       isIn ? `${member.name} checked in` : `Check in ${member.name}`
                     }
-                    style={[styles.checkinBtn, isIn && styles.checkinBtnDone]}>
+                    style={[styles.checkinBtn, isIn && styles.checkinBtnDone]}
+                  >
                     {isIn ? (
                       <Check size={16} color="#FFFFFF" strokeWidth={3} />
                     ) : (
@@ -197,7 +194,7 @@ export default function HomeScreen() {
               <Text style={styles.insightTitle}>YOUR GYM, IN ONE LINE</Text>
             </View>
             <Text style={styles.insightText}>{GYM.insight}</Text>
-            <Text style={styles.insightCaption}>From this week's check-ins and fee data</Text>
+            <Text style={styles.insightCaption}>From this week’s check-ins and fee data</Text>
           </Card>
         </AnimatedIn>
 

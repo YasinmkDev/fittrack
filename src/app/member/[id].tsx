@@ -167,7 +167,9 @@ export default function MemberScreen() {
         <Card style={styles.intimacyCard}>
           <View style={styles.intimacyHead}>
             <Sparkles size={15} color={theme.colors.accent} />
-            <Text style={styles.intimacyTitle}>ABOUT {member.name.split(' ')[0].toUpperCase()}</Text>
+            <Text style={styles.intimacyTitle}>
+              ABOUT {member.name.split(' ')[0].toUpperCase()}
+            </Text>
           </View>
           <Text style={styles.intimacyText}>
             {member.weightSeries.length > 1
@@ -201,7 +203,9 @@ export default function MemberScreen() {
             <View style={styles.sentIcon}>
               <Check size={13} color="#FFFFFF" strokeWidth={3} />
             </View>
-            <Text style={styles.sentText}>Card sent to {member.name.split(' ')[0]} on WhatsApp</Text>
+            <Text style={styles.sentText}>
+              Card sent to {member.name.split(' ')[0]} on WhatsApp
+            </Text>
           </View>
         ) : (
           <View style={styles.actionBtn}>
@@ -215,7 +219,7 @@ export default function MemberScreen() {
         <View style={styles.shareHintRow}>
           <Share2 size={13} color={theme.colors.textTertiary} />
           <Text style={styles.shareHint}>
-            Members post these themselves — the gym's results advertise the gym.
+            Members post these themselves — the gym’s results advertise the gym.
           </Text>
         </View>
       </AnimatedIn>

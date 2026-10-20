@@ -20,7 +20,8 @@ export function AnimatedIn({ children, index = 0, style }: AnimatedInProps) {
   return (
     <Animated.View
       entering={FadeInDown.delay(delay).springify().damping(17).stiffness(210).mass(0.72)}
-      style={[styles.wrap, style]}>
+      style={[styles.wrap, style]}
+    >
       {children}
     </Animated.View>
   );

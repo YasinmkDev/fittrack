@@ -76,7 +76,8 @@ export default function MembersScreen() {
               .stiffness(210)
               .mass(0.72)}
             layout={LinearTransition.springify().damping(19).stiffness(220)}
-            exiting={FadeOut.duration(140)}>
+            exiting={FadeOut.duration(140)}
+          >
             <MemberCard member={item} onPress={() => router.push(`/member/${item.id}`)} />
           </Animated.View>
         )}
