@@ -21,7 +21,8 @@ export default function TabsLayout() {
           height: 62,
           paddingTop: 6,
         },
-      }}>
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
@@ -50,7 +51,8 @@ export default function TabsLayout() {
                 alignItems: 'center',
                 justifyContent: 'center',
                 marginTop: -6,
-              }}>
+              }}
+            >
               <UserPlus size={20} color="#FFFFFF" />
             </View>
           ),

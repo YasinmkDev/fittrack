@@ -95,7 +95,11 @@ export default function MemberScreen() {
             <Text style={styles.planPrice}>{rs(member.feeTotal)}</Text>
           </View>
           <View style={styles.progressWrap}>
-            <ProgressBar value={renewed ? 0.02 : planElapsed} color={theme.colors.accent} height={5} />
+            <ProgressBar
+              value={renewed ? 0.02 : planElapsed}
+              color={theme.colors.accent}
+              height={5}
+            />
           </View>
           <View style={styles.feeRow}>
             <Text style={styles.feeText}>
@@ -127,7 +131,10 @@ export default function MemberScreen() {
               </View>
             ) : (
               <View style={styles.actionBtn}>
-                <PrimaryButton label={`Renew ${plan.name} — ${rs(plan.price)}`} onPress={() => setRenewed(true)} />
+                <PrimaryButton
+                  label={`Renew ${plan.name} — ${rs(plan.price)}`}
+                  onPress={() => setRenewed(true)}
+                />
               </View>
             ))}
         </Card>
@@ -140,10 +147,8 @@ export default function MemberScreen() {
             <View style={styles.weightTop}>
               <Text style={styles.weightValue}>{lastKg} kg</Text>
               <Text
-                style={[
-                  styles.weightDelta,
-                  weightDelta <= 0 ? styles.weightGood : styles.weightUp,
-                ]}>
+                style={[styles.weightDelta, weightDelta <= 0 ? styles.weightGood : styles.weightUp]}
+              >
                 {weightDelta > 0 ? '+' : ''}
                 {weightDelta} kg since {member.weightSeries[0].label} · goal: {member.goal}
               </Text>
@@ -185,12 +190,31 @@ function SpecRow({ label, value, last = false }: { label: string; value: string;
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.canvas },
   content: { padding: theme.spacing.xl, paddingBottom: theme.spacing.xxxl },
-  emptyWrap: { flex: 1, backgroundColor: theme.colors.canvas, alignItems: 'center', justifyContent: 'center', gap: theme.spacing.md, padding: theme.spacing.xl },
-  emptyTitle: { fontSize: theme.fontSize.title, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
-  emptyText: { fontSize: theme.fontSize.small, color: theme.colors.textSecondary, marginBottom: theme.spacing.lg },
+  emptyWrap: {
+    flex: 1,
+    backgroundColor: theme.colors.canvas,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.spacing.md,
+    padding: theme.spacing.xl,
+  },
+  emptyTitle: {
+    fontSize: theme.fontSize.title,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+  },
+  emptyText: {
+    fontSize: theme.fontSize.small,
+    color: theme.colors.textSecondary,
+    marginBottom: theme.spacing.lg,
+  },
   identity: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.md },
   identityMain: { flex: 1 },
-  name: { fontSize: theme.fontSize.title, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
+  name: {
+    fontSize: theme.fontSize.title,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+  },
   meta: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, marginTop: 2 },
   statRow: { flexDirection: 'row', gap: theme.spacing.md, marginTop: theme.spacing.xl },
   statBox: {
@@ -203,30 +227,94 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statValueRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  statValue: { fontSize: theme.fontSize.section, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
+  statValue: {
+    fontSize: theme.fontSize.section,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+  },
   statLabel: { fontSize: 11, color: theme.colors.textSecondary, marginTop: 3, textAlign: 'center' },
-  planTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: theme.spacing.md },
-  planName: { fontSize: theme.fontSize.body, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
+  planTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: theme.spacing.md,
+  },
+  planName: {
+    fontSize: theme.fontSize.body,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+  },
   planMeta: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, marginTop: 2 },
-  planPrice: { fontSize: theme.fontSize.body, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
+  planPrice: {
+    fontSize: theme.fontSize.body,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+  },
   progressWrap: { marginTop: theme.spacing.lg },
   feeRow: { flexDirection: 'row', justifyContent: 'space-between', marginTop: theme.spacing.md },
   feeText: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary },
-  feePct: { fontSize: theme.fontSize.caption, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
+  feePct: {
+    fontSize: theme.fontSize.caption,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+  },
   actionBtn: { marginTop: theme.spacing.lg },
-  sentRow: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm, marginTop: theme.spacing.lg, backgroundColor: theme.colors.successTint, borderRadius: theme.radii.md, padding: theme.spacing.md, minHeight: 48 },
-  sentIcon: { width: 22, height: 22, borderRadius: 11, backgroundColor: theme.colors.success, alignItems: 'center', justifyContent: 'center' },
-  sentText: { flex: 1, fontSize: theme.fontSize.small, fontWeight: theme.fontWeight.semibold, color: theme.colors.success },
-  weightTop: { flexDirection: 'row', alignItems: 'baseline', gap: theme.spacing.md, marginBottom: theme.spacing.md, flexWrap: 'wrap' },
+  sentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    marginTop: theme.spacing.lg,
+    backgroundColor: theme.colors.successTint,
+    borderRadius: theme.radii.md,
+    padding: theme.spacing.md,
+    minHeight: 48,
+  },
+  sentIcon: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: theme.colors.success,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sentText: {
+    flex: 1,
+    fontSize: theme.fontSize.small,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.success,
+  },
+  weightTop: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: theme.spacing.md,
+    marginBottom: theme.spacing.md,
+    flexWrap: 'wrap',
+  },
   weightValue: { fontSize: 24, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
   weightDelta: { fontSize: theme.fontSize.caption, fontWeight: theme.fontWeight.semibold },
   weightGood: { color: theme.colors.success },
   weightUp: { color: theme.colors.accent },
-  noteCard: { flexDirection: 'row', gap: theme.spacing.md, alignItems: 'flex-start', marginBottom: theme.spacing.md },
+  noteCard: {
+    flexDirection: 'row',
+    gap: theme.spacing.md,
+    alignItems: 'flex-start',
+    marginBottom: theme.spacing.md,
+  },
   noteText: { flex: 1, fontSize: theme.fontSize.small, color: theme.colors.text, lineHeight: 20 },
   detailCard: {},
-  specRow: { flexDirection: 'row', justifyContent: 'space-between', gap: theme.spacing.lg, paddingVertical: theme.spacing.md },
+  specRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: theme.spacing.lg,
+    paddingVertical: theme.spacing.md,
+  },
   specDivider: { borderBottomWidth: 1, borderBottomColor: theme.colors.border },
   specLabel: { fontSize: theme.fontSize.small, color: theme.colors.textSecondary },
-  specValue: { flex: 1, fontSize: theme.fontSize.small, fontWeight: theme.fontWeight.semibold, color: theme.colors.text, textAlign: 'right' },
+  specValue: {
+    flex: 1,
+    fontSize: theme.fontSize.small,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+    textAlign: 'right',
+  },
 });

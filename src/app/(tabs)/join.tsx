@@ -59,8 +59,8 @@ export default function JoinScreen() {
           <Text style={styles.successTitle}>{joinedName} is in.</Text>
           <Text style={styles.successText}>
             {plan.name} plan with {trainer}. {rs(totalDue)} collected today ({rs(plan.price)} plan +{' '}
-            {rs(ADMISSION_FEE)} admission). A welcome message with today's class timings was sent
-            on WhatsApp.
+            {rs(ADMISSION_FEE)} admission). A welcome message with today’s class timings was sent on
+            WhatsApp.
           </Text>
           <View style={styles.successActions}>
             <PrimaryButton label="Add another member" onPress={reset} />
@@ -72,11 +72,16 @@ export default function JoinScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={styles.flex}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.flex}
+      >
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
             <Text style={styles.title}>Add member</Text>
-            <Text style={styles.subtitle}>Under a minute at the front desk. Fee is collected now.</Text>
+            <Text style={styles.subtitle}>
+              Under a minute at the front desk. Fee is collected now.
+            </Text>
           </View>
 
           <AnimatedIn index={0}>
@@ -117,7 +122,8 @@ export default function JoinScreen() {
                   onPress={() => setGoal(g)}
                   accessibilityRole="button"
                   accessibilityState={{ selected: goal === g }}
-                  style={[styles.chip, goal === g && styles.chipActive]}>
+                  style={[styles.chip, goal === g && styles.chipActive]}
+                >
                   <Text style={[styles.chipLabel, goal === g && styles.chipLabelActive]}>{g}</Text>
                 </Pressable>
               ))}
@@ -135,7 +141,8 @@ export default function JoinScreen() {
                   accessibilityRole="radio"
                   accessibilityState={{ selected }}
                   accessibilityLabel={`${p.name} plan, ${rs(p.price)}`}
-                  style={({ pressed }) => pressed && styles.pressed}>
+                  style={({ pressed }) => pressed && styles.pressed}
+                >
                   <Card style={[styles.planCard, selected && styles.planCardSelected]}>
                     <View style={[styles.radio, selected && styles.radioSelected]}>
                       {selected && <View style={styles.radioDot} />}
@@ -160,8 +167,11 @@ export default function JoinScreen() {
                   onPress={() => setTrainer(t)}
                   accessibilityRole="button"
                   accessibilityState={{ selected: trainer === t }}
-                  style={[styles.chip, trainer === t && styles.chipActive]}>
-                  <Text style={[styles.chipLabel, trainer === t && styles.chipLabelActive]}>{t}</Text>
+                  style={[styles.chip, trainer === t && styles.chipActive]}
+                >
+                  <Text style={[styles.chipLabel, trainer === t && styles.chipLabelActive]}>
+                    {t}
+                  </Text>
                 </Pressable>
               ))}
             </View>
@@ -186,7 +196,10 @@ export default function JoinScreen() {
             <View style={styles.cta}>
               <PrimaryButton label={`Add member — collect ${rs(totalDue)}`} onPress={handleJoin} />
               <View style={styles.ghostWrap}>
-                <GhostButton label="Save as enquiry instead" onPress={() => setJoinedName(name.trim() || 'New enquiry')} />
+                <GhostButton
+                  label="Save as enquiry instead"
+                  onPress={() => setJoinedName(name.trim() || 'New enquiry')}
+                />
               </View>
             </View>
           </AnimatedIn>
@@ -201,9 +214,23 @@ const styles = StyleSheet.create({
   flex: { flex: 1 },
   content: { padding: theme.spacing.xl, paddingBottom: theme.spacing.xxxl },
   header: { marginBottom: theme.spacing.xl },
-  title: { fontSize: theme.fontSize.display, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
-  subtitle: { fontSize: theme.fontSize.small, color: theme.colors.textSecondary, marginTop: theme.spacing.xs, lineHeight: 20 },
-  label: { fontSize: theme.fontSize.caption, fontWeight: theme.fontWeight.medium, color: theme.colors.textSecondary, marginBottom: theme.spacing.sm },
+  title: {
+    fontSize: theme.fontSize.display,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+  },
+  subtitle: {
+    fontSize: theme.fontSize.small,
+    color: theme.colors.textSecondary,
+    marginTop: theme.spacing.xs,
+    lineHeight: 20,
+  },
+  label: {
+    fontSize: theme.fontSize.caption,
+    fontWeight: theme.fontWeight.medium,
+    color: theme.colors.textSecondary,
+    marginBottom: theme.spacing.sm,
+  },
   labelSpaced: { marginTop: theme.spacing.lg },
   input: {
     minHeight: 50,
@@ -216,7 +243,11 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
   },
   inputError: { borderColor: theme.colors.danger },
-  errorText: { fontSize: theme.fontSize.caption, color: theme.colors.danger, marginTop: theme.spacing.sm },
+  errorText: {
+    fontSize: theme.fontSize.caption,
+    color: theme.colors.danger,
+    marginTop: theme.spacing.sm,
+  },
   chipWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: theme.spacing.sm },
   chip: {
     borderRadius: theme.radii.pill,
@@ -229,30 +260,103 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   chipActive: { backgroundColor: theme.colors.ink, borderColor: theme.colors.ink },
-  chipLabel: { fontSize: theme.fontSize.caption, fontWeight: theme.fontWeight.semibold, color: theme.colors.textSecondary },
+  chipLabel: {
+    fontSize: theme.fontSize.caption,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.textSecondary,
+  },
   chipLabelActive: { color: '#FFFFFF' },
   pressed: { opacity: 0.8 },
-  planCard: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.md, marginBottom: theme.spacing.sm, padding: theme.spacing.lg },
+  planCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+    marginBottom: theme.spacing.sm,
+    padding: theme.spacing.lg,
+  },
   planCardSelected: { borderColor: theme.colors.accent, borderWidth: 1.5 },
-  radio: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: theme.colors.borderStrong, alignItems: 'center', justifyContent: 'center' },
+  radio: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: theme.colors.borderStrong,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   radioSelected: { borderColor: theme.colors.accent },
   radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: theme.colors.accent },
   planMain: { flex: 1 },
-  planName: { fontSize: theme.fontSize.small, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
+  planName: {
+    fontSize: theme.fontSize.small,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+  },
   planDetail: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, marginTop: 2 },
-  planPrice: { fontSize: theme.fontSize.small, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
-  line: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: theme.spacing.md },
+  planPrice: {
+    fontSize: theme.fontSize.small,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+  },
+  line: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: theme.spacing.md,
+  },
   lineDivider: { borderTopWidth: 1, borderTopColor: theme.colors.border },
   lineLabel: { fontSize: theme.fontSize.small, color: theme.colors.text },
-  lineAmount: { fontSize: theme.fontSize.small, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
-  totalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1, borderTopColor: theme.colors.borderStrong, paddingTop: theme.spacing.lg },
-  totalLabel: { fontSize: theme.fontSize.section, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
-  totalValue: { fontSize: theme.fontSize.title, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
+  lineAmount: {
+    fontSize: theme.fontSize.small,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+  },
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.borderStrong,
+    paddingTop: theme.spacing.lg,
+  },
+  totalLabel: {
+    fontSize: theme.fontSize.section,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+  },
+  totalValue: {
+    fontSize: theme.fontSize.title,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+  },
   cta: { marginTop: theme.spacing.xxl },
   ghostWrap: { marginTop: theme.spacing.md },
-  successWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: theme.spacing.xxl },
-  successIcon: { width: 64, height: 64, borderRadius: 32, backgroundColor: theme.colors.success, alignItems: 'center', justifyContent: 'center', marginBottom: theme.spacing.xl },
-  successTitle: { fontSize: 24, fontWeight: theme.fontWeight.bold, color: theme.colors.text, textAlign: 'center' },
-  successText: { fontSize: theme.fontSize.body, color: theme.colors.textSecondary, lineHeight: 23, textAlign: 'center', marginTop: theme.spacing.md },
+  successWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: theme.spacing.xxl,
+  },
+  successIcon: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: theme.colors.success,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: theme.spacing.xl,
+  },
+  successTitle: {
+    fontSize: 24,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+    textAlign: 'center',
+  },
+  successText: {
+    fontSize: theme.fontSize.body,
+    color: theme.colors.textSecondary,
+    lineHeight: 23,
+    textAlign: 'center',
+    marginTop: theme.spacing.md,
+  },
   successActions: { marginTop: theme.spacing.xxl, alignSelf: 'stretch' },
 });

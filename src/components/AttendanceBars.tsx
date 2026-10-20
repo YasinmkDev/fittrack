@@ -34,9 +34,7 @@ export function AttendanceBars({ data, labels, height = 110 }: AttendanceBarsPro
       </View>
       <View style={styles.labels}>
         {labels.map((label, i) => (
-          <Text
-            key={i}
-            style={[styles.label, i === labels.length - 1 && styles.labelToday]}>
+          <Text key={i} style={[styles.label, i === labels.length - 1 && styles.labelToday]}>
             {label}
           </Text>
         ))}

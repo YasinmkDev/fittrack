@@ -27,7 +27,11 @@ export function ClassCard({ gymClass }: ClassCardProps) {
         {gymClass.state === 'upcoming' && <Chip label="Upcoming" tone="info" />}
       </View>
       <View style={styles.progressWrap}>
-        <ProgressBar value={pct} color={almostFull ? theme.colors.warning : theme.colors.accent} height={5} />
+        <ProgressBar
+          value={pct}
+          color={almostFull ? theme.colors.warning : theme.colors.accent}
+          height={5}
+        />
       </View>
       <Text style={styles.capacity}>
         {gymClass.booked} of {gymClass.capacity} spots booked
@@ -48,5 +52,9 @@ const styles = StyleSheet.create({
   },
   meta: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, marginTop: 2 },
   progressWrap: { marginTop: theme.spacing.lg },
-  capacity: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, marginTop: theme.spacing.sm },
+  capacity: {
+    fontSize: theme.fontSize.caption,
+    color: theme.colors.textSecondary,
+    marginTop: theme.spacing.sm,
+  },
 });

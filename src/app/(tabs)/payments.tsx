@@ -41,8 +41,8 @@ export default function PaymentsScreen() {
             </View>
             <View style={styles.noteRow}>
               <Text style={styles.noteText}>
-                {GYM.overdueMembers} members are overdue. Send fee reminders from each member page
-                — they go on WhatsApp.
+                {GYM.overdueMembers} members are overdue. Send fee reminders from each member page —
+                they go on WhatsApp.
               </Text>
             </View>
           </Card>
@@ -59,7 +59,8 @@ export default function PaymentsScreen() {
                   onPress={() => router.push(`/member/${member.id}`)}
                   accessibilityRole="button"
                   accessibilityLabel={`${member.name} owes ${rs(due)}`}
-                  style={[styles.dueRow, i > 0 && styles.dueDivider]}>
+                  style={[styles.dueRow, i > 0 && styles.dueDivider]}
+                >
                   <Avatar name={member.name} size={40} />
                   <View style={styles.dueMain}>
                     <Text style={styles.dueName} numberOfLines={1}>
@@ -104,27 +105,82 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.canvas },
   content: { padding: theme.spacing.xl, paddingBottom: theme.spacing.xxxl },
   header: { marginBottom: theme.spacing.xl },
-  title: { fontSize: theme.fontSize.display, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
-  subtitle: { fontSize: theme.fontSize.small, color: theme.colors.textSecondary, marginTop: theme.spacing.xs },
-  label: { fontSize: theme.fontSize.caption, fontWeight: theme.fontWeight.medium, color: theme.colors.textSecondary },
-  bigNumber: { fontSize: 30, fontWeight: theme.fontWeight.bold, color: theme.colors.text, marginTop: theme.spacing.xs },
+  title: {
+    fontSize: theme.fontSize.display,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+  },
+  subtitle: {
+    fontSize: theme.fontSize.small,
+    color: theme.colors.textSecondary,
+    marginTop: theme.spacing.xs,
+  },
+  label: {
+    fontSize: theme.fontSize.caption,
+    fontWeight: theme.fontWeight.medium,
+    color: theme.colors.textSecondary,
+  },
+  bigNumber: {
+    fontSize: 30,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+    marginTop: theme.spacing.xs,
+  },
   progressWrap: { marginTop: theme.spacing.lg },
-  summaryRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: theme.spacing.md, marginTop: theme.spacing.md },
+  summaryRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: theme.spacing.md,
+    marginTop: theme.spacing.md,
+  },
   summaryText: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary },
-  noteRow: { marginTop: theme.spacing.lg, paddingTop: theme.spacing.lg, borderTopWidth: 1, borderTopColor: theme.colors.border },
+  noteRow: {
+    marginTop: theme.spacing.lg,
+    paddingTop: theme.spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: theme.colors.border,
+  },
   noteText: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, lineHeight: 18 },
   dueCard: { paddingHorizontal: theme.spacing.xl, overflow: 'hidden' },
-  dueRow: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.md, paddingVertical: theme.spacing.lg, minHeight: 64 },
+  dueRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+    paddingVertical: theme.spacing.lg,
+    minHeight: 64,
+  },
   dueDivider: { borderTopWidth: 1, borderTopColor: theme.colors.border },
   dueMain: { flex: 1 },
-  dueName: { fontSize: theme.fontSize.small, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
+  dueName: {
+    fontSize: theme.fontSize.small,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+  },
   dueMeta: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, marginTop: 2 },
-  dueAmount: { fontSize: theme.fontSize.caption, fontWeight: theme.fontWeight.bold, color: theme.colors.danger },
+  dueAmount: {
+    fontSize: theme.fontSize.caption,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.danger,
+  },
   recentCard: { paddingHorizontal: theme.spacing.xl },
-  recentRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: theme.spacing.lg, gap: theme.spacing.md },
+  recentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: theme.spacing.lg,
+    gap: theme.spacing.md,
+  },
   recentDivider: { borderTopWidth: 1, borderTopColor: theme.colors.border },
   recentMain: { flex: 1 },
-  recentName: { fontSize: theme.fontSize.small, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
+  recentName: {
+    fontSize: theme.fontSize.small,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+  },
   recentMeta: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, marginTop: 2 },
-  recentAmount: { fontSize: theme.fontSize.small, fontWeight: theme.fontWeight.bold, color: theme.colors.success },
+  recentAmount: {
+    fontSize: theme.fontSize.small,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.success,
+  },
 });

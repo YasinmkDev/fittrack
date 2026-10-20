@@ -40,7 +40,8 @@ export default function MembersScreen() {
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.chipScroll}
-        contentContainerStyle={styles.chipRow}>
+        contentContainerStyle={styles.chipRow}
+      >
         {FILTERS.map((f) => {
           const active = filter === f.id;
           const count =
@@ -52,7 +53,8 @@ export default function MembersScreen() {
               accessibilityRole="button"
               accessibilityState={{ selected: active }}
               accessibilityLabel={`${f.label}, ${count} members`}
-              style={[styles.chip, active && styles.chipActive]}>
+              style={[styles.chip, active && styles.chipActive]}
+            >
               <Text style={[styles.chipLabel, active && styles.chipLabelActive]}>
                 {f.label} · {count}
               </Text>
@@ -86,8 +88,16 @@ export default function MembersScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.canvas },
   header: { paddingHorizontal: theme.spacing.xl, paddingTop: theme.spacing.sm },
-  title: { fontSize: theme.fontSize.display, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
-  subtitle: { fontSize: theme.fontSize.small, color: theme.colors.textSecondary, marginTop: theme.spacing.xs },
+  title: {
+    fontSize: theme.fontSize.display,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+  },
+  subtitle: {
+    fontSize: theme.fontSize.small,
+    color: theme.colors.textSecondary,
+    marginTop: theme.spacing.xs,
+  },
   chipScroll: { flexGrow: 0, marginTop: theme.spacing.lg },
   chipRow: { paddingHorizontal: theme.spacing.xl, gap: theme.spacing.sm },
   chip: {
@@ -101,10 +111,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   chipActive: { backgroundColor: theme.colors.ink, borderColor: theme.colors.ink },
-  chipLabel: { fontSize: theme.fontSize.caption, fontWeight: theme.fontWeight.semibold, color: theme.colors.textSecondary },
+  chipLabel: {
+    fontSize: theme.fontSize.caption,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.textSecondary,
+  },
   chipLabelActive: { color: '#FFFFFF' },
   list: { padding: theme.spacing.xl, paddingTop: theme.spacing.lg },
   empty: { alignItems: 'center', paddingTop: theme.spacing.xxxl * 2, gap: theme.spacing.sm },
-  emptyTitle: { fontSize: theme.fontSize.section, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
+  emptyTitle: {
+    fontSize: theme.fontSize.section,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+  },
   emptyText: { fontSize: theme.fontSize.small, color: theme.colors.textSecondary },
 });

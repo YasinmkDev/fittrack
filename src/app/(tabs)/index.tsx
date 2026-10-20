@@ -34,7 +34,7 @@ export default function HomeScreen() {
           <View style={styles.header}>
             <View style={styles.headerMain}>
               <Text style={styles.greeting}>
-                {GYM.area} · {GYM.owner}'s gym
+                {GYM.area} · {GYM.owner}’s gym
               </Text>
               <Text style={styles.business}>{GYM.name}</Text>
             </View>
@@ -43,7 +43,8 @@ export default function HomeScreen() {
               accessibilityRole="button"
               accessibilityLabel="Notifications and Pro"
               style={styles.bell}
-              hitSlop={8}>
+              hitSlop={8}
+            >
               <Bell size={21} color={theme.colors.text} />
               <View style={styles.dot} />
             </Pressable>
@@ -58,7 +59,11 @@ export default function HomeScreen() {
                 <Text style={styles.liveLabel}>IN THE GYM NOW</Text>
               </View>
               <View style={styles.liveCountRow}>
-                <AnimatedNumber value={GYM.inGymNow} format={(n) => `${n}`} style={styles.liveCount} />
+                <AnimatedNumber
+                  value={GYM.inGymNow}
+                  format={(n) => `${n}`}
+                  style={styles.liveCount}
+                />
                 <Text style={styles.liveCapacity}>/ {GYM.capacityNow} capacity</Text>
               </View>
               <Text style={styles.liveSub}>
@@ -151,11 +156,14 @@ export default function HomeScreen() {
             onPress={() => router.push('/paywall')}
             accessibilityRole="button"
             accessibilityLabel="Upgrade to FitTrack Pro"
-            style={({ pressed }) => [styles.proBanner, pressed && styles.pressed]}>
+            style={({ pressed }) => [styles.proBanner, pressed && styles.pressed]}
+          >
             <Sparkles size={19} color={theme.colors.accentDark} />
             <View style={styles.proMain}>
               <Text style={styles.proTitle}>Free plan — 200 member limit reached soon</Text>
-              <Text style={styles.proSub}>Pro unlocks unlimited members and WhatsApp automation.</Text>
+              <Text style={styles.proSub}>
+                Pro unlocks unlimited members and WhatsApp automation.
+              </Text>
             </View>
             <ChevronRight size={18} color={theme.colors.accentDark} />
           </Pressable>
@@ -194,7 +202,8 @@ function AttentionRow({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={title}
-      style={[styles.attentionRow, divider && styles.attentionDivider]}>
+      style={[styles.attentionRow, divider && styles.attentionDivider]}
+    >
       <View style={[styles.attentionIcon, { backgroundColor: tint }]}>{icon}</View>
       <View style={styles.attentionMain}>
         <Text style={styles.attentionTitle} numberOfLines={2}>
@@ -250,7 +259,12 @@ const styles = StyleSheet.create({
     letterSpacing: 1.2,
     color: theme.colors.accent,
   },
-  liveCountRow: { flexDirection: 'row', alignItems: 'baseline', gap: theme.spacing.sm, marginTop: theme.spacing.xs },
+  liveCountRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: theme.spacing.sm,
+    marginTop: theme.spacing.xs,
+  },
   liveCount: { fontSize: 42, fontWeight: theme.fontWeight.extrabold, color: theme.colors.text },
   liveCapacity: { fontSize: theme.fontSize.small, color: theme.colors.textSecondary },
   liveSub: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, marginTop: 2 },
@@ -263,17 +277,49 @@ const styles = StyleSheet.create({
     borderTopColor: theme.colors.border,
   },
   stat: { flex: 1 },
-  statValue: { fontSize: theme.fontSize.section, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
+  statValue: {
+    fontSize: theme.fontSize.section,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+  },
   statAccent: { color: theme.colors.accent },
   statDanger: { color: theme.colors.danger },
   statLabel: { fontSize: 12, color: theme.colors.textSecondary, marginTop: 2 },
-  divider: { width: 1, height: 30, backgroundColor: theme.colors.border, marginHorizontal: theme.spacing.md },
-  feesCard: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.lg, marginTop: theme.spacing.md },
+  divider: {
+    width: 1,
+    height: 30,
+    backgroundColor: theme.colors.border,
+    marginHorizontal: theme.spacing.md,
+  },
+  feesCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.lg,
+    marginTop: theme.spacing.md,
+  },
   feesMain: { flex: 1 },
-  label: { fontSize: theme.fontSize.caption, fontWeight: theme.fontWeight.medium, color: theme.colors.textSecondary },
-  bigNumber: { fontSize: 28, fontWeight: theme.fontWeight.bold, color: theme.colors.text, marginTop: theme.spacing.xs },
-  sub: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, marginTop: 2, lineHeight: 18 },
-  ringText: { fontSize: theme.fontSize.section, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
+  label: {
+    fontSize: theme.fontSize.caption,
+    fontWeight: theme.fontWeight.medium,
+    color: theme.colors.textSecondary,
+  },
+  bigNumber: {
+    fontSize: 28,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+    marginTop: theme.spacing.xs,
+  },
+  sub: {
+    fontSize: theme.fontSize.caption,
+    color: theme.colors.textSecondary,
+    marginTop: 2,
+    lineHeight: 18,
+  },
+  ringText: {
+    fontSize: theme.fontSize.section,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+  },
   attentionCard: { overflow: 'hidden' },
   attentionRow: {
     flexDirection: 'row',
@@ -291,9 +337,23 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   attentionMain: { flex: 1 },
-  attentionTitle: { fontSize: theme.fontSize.small, fontWeight: theme.fontWeight.semibold, color: theme.colors.text, lineHeight: 19 },
-  attentionSub: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, marginTop: 2, lineHeight: 17 },
-  chartTitle: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, marginBottom: theme.spacing.md },
+  attentionTitle: {
+    fontSize: theme.fontSize.small,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+    lineHeight: 19,
+  },
+  attentionSub: {
+    fontSize: theme.fontSize.caption,
+    color: theme.colors.textSecondary,
+    marginTop: 2,
+    lineHeight: 17,
+  },
+  chartTitle: {
+    fontSize: theme.fontSize.caption,
+    color: theme.colors.textSecondary,
+    marginBottom: theme.spacing.md,
+  },
   proBanner: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -305,8 +365,22 @@ const styles = StyleSheet.create({
   },
   pressed: { opacity: 0.8 },
   proMain: { flex: 1 },
-  proTitle: { fontSize: theme.fontSize.small, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
-  proSub: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, marginTop: 2, lineHeight: 17 },
-  footerNote: { flexDirection: 'row', gap: theme.spacing.sm, marginTop: theme.spacing.xl, paddingHorizontal: theme.spacing.xs },
+  proTitle: {
+    fontSize: theme.fontSize.small,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+  },
+  proSub: {
+    fontSize: theme.fontSize.caption,
+    color: theme.colors.textSecondary,
+    marginTop: 2,
+    lineHeight: 17,
+  },
+  footerNote: {
+    flexDirection: 'row',
+    gap: theme.spacing.sm,
+    marginTop: theme.spacing.xl,
+    paddingHorizontal: theme.spacing.xs,
+  },
   footerText: { flex: 1, fontSize: 12, color: theme.colors.textTertiary, lineHeight: 17 },
 });

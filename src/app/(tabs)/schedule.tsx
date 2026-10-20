@@ -16,9 +16,10 @@ export default function ScheduleScreen() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={styles.title}>Today's schedule</Text>
+          <Text style={styles.title}>Today’s schedule</Text>
           <Text style={styles.subtitle}>
-            {CLASSES_TODAY.length} classes · {bookedTotal} bookings · {PT_SESSIONS.length} PT sessions
+            {CLASSES_TODAY.length} classes · {bookedTotal} bookings · {PT_SESSIONS.length} PT
+            sessions
           </Text>
         </View>
 
@@ -54,9 +55,22 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.canvas },
   content: { padding: theme.spacing.xl, paddingBottom: theme.spacing.xxxl },
   header: { marginBottom: theme.spacing.xl },
-  title: { fontSize: theme.fontSize.display, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
-  subtitle: { fontSize: theme.fontSize.small, color: theme.colors.textSecondary, marginTop: theme.spacing.xs },
-  ptCard: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.md, marginBottom: theme.spacing.md },
+  title: {
+    fontSize: theme.fontSize.display,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+  },
+  subtitle: {
+    fontSize: theme.fontSize.small,
+    color: theme.colors.textSecondary,
+    marginTop: theme.spacing.xs,
+  },
+  ptCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+    marginBottom: theme.spacing.md,
+  },
   ptIcon: {
     width: 38,
     height: 38,
@@ -66,7 +80,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   ptMain: { flex: 1 },
-  ptName: { fontSize: theme.fontSize.small, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
+  ptName: {
+    fontSize: theme.fontSize.small,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+  },
   ptTrainer: { color: theme.colors.textSecondary, fontWeight: theme.fontWeight.regular },
   ptFocus: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, marginTop: 2 },
 });

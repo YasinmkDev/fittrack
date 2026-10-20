@@ -19,7 +19,8 @@ export function PrimaryButton({ label, onPress, accessibilityLabel }: ButtonProp
       }}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
-      style={({ pressed }) => [styles.primary, pressed && styles.pressed]}>
+      style={({ pressed }) => [styles.primary, pressed && styles.pressed]}
+    >
       <Text style={styles.primaryLabel}>{label}</Text>
     </Pressable>
   );
@@ -34,7 +35,8 @@ export function AccentButton({ label, onPress, accessibilityLabel }: ButtonProps
       }}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
-      style={({ pressed }) => [styles.accent, pressed && styles.pressed]}>
+      style={({ pressed }) => [styles.accent, pressed && styles.pressed]}
+    >
       <Text style={styles.primaryLabel}>{label}</Text>
     </Pressable>
   );
@@ -46,7 +48,8 @@ export function GhostButton({ label, onPress, accessibilityLabel }: ButtonProps)
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
-      style={({ pressed }) => [styles.ghost, pressed && styles.pressed]}>
+      style={({ pressed }) => [styles.ghost, pressed && styles.pressed]}
+    >
       <Text style={styles.ghostLabel}>{label}</Text>
     </Pressable>
   );

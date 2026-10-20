@@ -36,7 +36,8 @@ export function MemberCard({ member, onPress }: MemberCardProps) {
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`${member.name}, ${plan.name} plan, ${status.label}`}
-      style={({ pressed }) => pressed && styles.pressed}>
+      style={({ pressed }) => pressed && styles.pressed}
+    >
       <Card style={styles.card}>
         <View style={styles.topRow}>
           <Avatar name={member.name} />
@@ -97,8 +98,16 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.md,
     flexWrap: 'wrap',
   },
-  days: { fontSize: theme.fontSize.caption, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
+  days: {
+    fontSize: theme.fontSize.caption,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+  },
   streak: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  streakText: { fontSize: theme.fontSize.caption, color: theme.colors.accent, fontWeight: theme.fontWeight.semibold },
+  streakText: {
+    fontSize: theme.fontSize.caption,
+    color: theme.colors.accent,
+    fontWeight: theme.fontWeight.semibold,
+  },
   visits: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary },
 });
