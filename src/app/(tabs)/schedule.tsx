@@ -16,6 +16,7 @@ export default function ScheduleScreen() {
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
+          <Text style={styles.kicker}>Classes & coaching</Text>
           <Text style={styles.title}>Today’s schedule</Text>
           <Text style={styles.subtitle}>
             {CLASSES_TODAY.length} classes · {bookedTotal} bookings · {PT_SESSIONS.length} PT
@@ -55,10 +56,18 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.canvas },
   content: { padding: theme.spacing.xl, paddingBottom: theme.spacing.xxxl },
   header: { marginBottom: theme.spacing.xl },
+  kicker: {
+    fontSize: 11,
+    fontWeight: theme.fontWeight.bold,
+    letterSpacing: 1.4,
+    color: theme.colors.accent,
+    textTransform: 'uppercase',
+  },
   title: {
     fontSize: theme.fontSize.display,
-    fontWeight: theme.fontWeight.bold,
+    fontWeight: theme.fontWeight.extrabold,
     color: theme.colors.text,
+    letterSpacing: -0.5,
   },
   subtitle: {
     fontSize: theme.fontSize.small,

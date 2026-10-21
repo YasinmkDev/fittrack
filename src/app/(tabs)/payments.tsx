@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import { ChevronRight } from 'lucide-react-native';
+import * as Haptics from 'expo-haptics';
+import { Check } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnimatedIn } from '../../components/AnimatedIn';
@@ -15,13 +17,26 @@ import { rs, rsCompact } from '../../lib/format';
 import { theme } from '../../theme/theme';
 
 export default function PaymentsScreen() {
-  const feesPct = GYM.feesCollected / GYM.feesTarget;
   const dueMembers = MEMBERS.filter((m) => m.feeTotal - m.feePaid > 0);
+  // Collecting a fee moves the money on this screen, live.
+  const [collectedIds, setCollectedIds] = useState<string[]>([]);
+  const sessionCollected = dueMembers
+    .filter((m) => collectedIds.includes(m.id))
+    .reduce((sum, m) => sum + (m.feeTotal - m.feePaid), 0);
+  const collectedTotal = GYM.feesCollected + sessionCollected;
+  const outstanding = Math.max(0, GYM.feesOutstanding - sessionCollected);
+  const feesPct = collectedTotal / GYM.feesTarget;
+
+  const collect = (memberId: string) => {
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setCollectedIds((prev) => (prev.includes(memberId) ? prev : [...prev, memberId]));
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
+          <Text style={styles.kicker}>The money</Text>
           <Text style={styles.title}>Payments</Text>
           <Text style={styles.subtitle}>Fees — collected, due and overdue</Text>
         </View>
@@ -29,7 +44,7 @@ export default function PaymentsScreen() {
         <AnimatedIn index={0}>
           <Card>
             <Text style={styles.label}>Collected in October</Text>
-            <AnimatedNumber value={GYM.feesCollected} format={rs} style={styles.bigNumber} />
+            <AnimatedNumber value={collectedTotal} format={rs} style={styles.bigNumber} />
             <View style={styles.progressWrap}>
               <ProgressBar value={feesPct} />
             </View>
@@ -37,12 +52,17 @@ export default function PaymentsScreen() {
               <Text style={styles.summaryText}>
                 Target {rs(GYM.feesTarget)} · {Math.round(feesPct * 100)}%
               </Text>
-              <Chip label={`${rsCompact(GYM.feesOutstanding)} outstanding`} tone="warning" />
+              {outstanding > 0 ? (
+                <Chip label={`${rsCompact(outstanding)} outstanding`} tone="warning" />
+              ) : (
+                <Chip label="All collected" tone="success" />
+              )}
             </View>
             <View style={styles.noteRow}>
               <Text style={styles.noteText}>
-                {GYM.overdueMembers} members are overdue. Send fee reminders from each member page —
-                they go on WhatsApp.
+                {sessionCollected > 0
+                  ? `You collected ${rs(sessionCollected)} just now from the list below. Receipts were sent on WhatsApp.`
+                  : `${GYM.overdueMembers} members are overdue. Tap Collect when a fee lands — the totals move with you.`}
               </Text>
             </View>
           </Card>
@@ -53,26 +73,41 @@ export default function PaymentsScreen() {
           <Card padded={false} style={styles.dueCard}>
             {dueMembers.map((member, i) => {
               const due = member.feeTotal - member.feePaid;
+              const collected = collectedIds.includes(member.id);
               return (
-                <Pressable
-                  key={member.id}
-                  onPress={() => router.push(`/member/${member.id}`)}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${member.name} owes ${rs(due)}`}
-                  style={[styles.dueRow, i > 0 && styles.dueDivider]}
-                >
-                  <Avatar name={member.name} size={40} />
-                  <View style={styles.dueMain}>
-                    <Text style={styles.dueName} numberOfLines={1}>
-                      {member.name}
-                    </Text>
-                    <Text style={styles.dueMeta}>
-                      Paid {rs(member.feePaid)} of {rs(member.feeTotal)}
-                    </Text>
-                  </View>
-                  <Text style={styles.dueAmount}>{rsCompact(due)} due</Text>
-                  <ChevronRight size={17} color={theme.colors.textTertiary} />
-                </Pressable>
+                <View key={member.id} style={[styles.dueRow, i > 0 && styles.dueDivider]}>
+                  <Pressable
+                    onPress={() => router.push(`/member/${member.id}`)}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Open ${member.name}`}
+                    style={styles.dueTapArea}>
+                    <Avatar name={member.name} size={40} />
+                    <View style={styles.dueMain}>
+                      <Text style={styles.dueName} numberOfLines={1}>
+                        {member.name}
+                      </Text>
+                      <Text style={styles.dueMeta}>
+                        {collected
+                          ? `Settled in full · ${rs(member.feeTotal)}`
+                          : `Paid ${rs(member.feePaid)} of ${rs(member.feeTotal)}`}
+                      </Text>
+                    </View>
+                  </Pressable>
+                  {collected ? (
+                    <View style={styles.collectedState}>
+                      <Check size={15} color={theme.colors.success} strokeWidth={3} />
+                      <Text style={styles.collectedLabel}>Collected</Text>
+                    </View>
+                  ) : (
+                    <Pressable
+                      onPress={() => collect(member.id)}
+                      accessibilityRole="button"
+                      accessibilityLabel={`Collect ${rs(due)} from ${member.name}`}
+                      style={styles.collectBtn}>
+                      <Text style={styles.collectBtnLabel}>Collect {rsCompact(due)}</Text>
+                    </Pressable>
+                  )}
+                </View>
               );
             })}
           </Card>
@@ -105,10 +140,38 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.canvas },
   content: { padding: theme.spacing.xl, paddingBottom: theme.spacing.xxxl },
   header: { marginBottom: theme.spacing.xl },
+  kicker: {
+    fontSize: 11,
+    fontWeight: theme.fontWeight.bold,
+    letterSpacing: 1.4,
+    color: theme.colors.accent,
+    textTransform: 'uppercase',
+  },
   title: {
     fontSize: theme.fontSize.display,
-    fontWeight: theme.fontWeight.bold,
+    fontWeight: theme.fontWeight.extrabold,
     color: theme.colors.text,
+    letterSpacing: -0.5,
+  },
+  dueTapArea: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: theme.spacing.md },
+  collectBtn: {
+    backgroundColor: theme.colors.ink,
+    borderRadius: theme.radii.pill,
+    paddingHorizontal: theme.spacing.md,
+    minHeight: 40,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  collectBtnLabel: {
+    color: '#FFFFFF',
+    fontSize: theme.fontSize.caption,
+    fontWeight: theme.fontWeight.bold,
+  },
+  collectedState: { flexDirection: 'row', alignItems: 'center', gap: 4, minHeight: 40 },
+  collectedLabel: {
+    fontSize: theme.fontSize.caption,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.success,
   },
   subtitle: {
     fontSize: theme.fontSize.small,

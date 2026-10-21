@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, Share, StyleSheet, Text, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Check, Flame, NotebookPen, Share2, Sparkles } from 'lucide-react-native';
 
@@ -204,15 +204,28 @@ export default function MemberScreen() {
               <Check size={13} color="#FFFFFF" strokeWidth={3} />
             </View>
             <Text style={styles.sentText}>
-              Card sent to {member.name.split(' ')[0]} on WhatsApp
+              Shared — {member.name.split(' ')[0]} has the card. That post is your next member
+              finding you.
             </Text>
           </View>
         ) : (
           <View style={styles.actionBtn}>
             <PrimaryButton
-              label="Send card to member"
-              onPress={() => setCardShared(true)}
-              accessibilityLabel={`Send progress card to ${member.name}`}
+              label="Share this card"
+              onPress={async () => {
+                try {
+                  await Share.share({
+                    message:
+                      member.weightSeries.length > 1
+                        ? `${member.name} at PowerHouse Gym, Mingora: ${weightDelta <= 0 ? 'down' : 'up'} ${Math.abs(weightDelta)} kg since ${member.weightSeries[0].label}, on a ${member.streakWeeks}-week streak. Progress tracked with FitTrack.`
+                        : `${member.name} at PowerHouse Gym, Mingora: ${member.streakWeeks}-week streak and counting. Progress tracked with FitTrack.`,
+                  });
+                  setCardShared(true);
+                } catch {
+                  // share sheet dismissed
+                }
+              }}
+              accessibilityLabel={`Share progress card for ${member.name}`}
             />
           </View>
         )}
