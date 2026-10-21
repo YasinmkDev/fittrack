@@ -33,6 +33,12 @@ export const RETENTION_RADAR: RadarAthlete[] = [
   { id: 'ra2', initials: 'TK', name: 'Tara Kowalski', detail: 'Absent 14 days • Injury flag', badge: 'red' },
 ];
 
+/** Revealed by Retention Radar "View All". */
+export const RETENTION_RADAR_EXTRA: RadarAthlete[] = [
+  { id: 'ra3', initials: 'MW', name: 'Marcus Webb', detail: 'Absent 9 days • Prev: 3x/wk', badge: 'orange' },
+  { id: 'ra4', initials: 'PN', name: 'Priya Nair', detail: 'Absent 16 days • Missed onboarding', badge: 'red' },
+];
+
 export interface Milestone {
   id: string;
   icon: 'trophy' | 'flame';

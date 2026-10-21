@@ -6,9 +6,9 @@
  */
 export const theme = {
   colors: {
-    canvas: '#F7F6F2',
+    canvas: '#FCFCFA',
     surface: '#FFFFFF',
-    surfaceAlt: '#F0EFEB',
+    surfaceAlt: '#F4F4F1',
     ink: '#141414',
     inkSoft: '#26231F',
     inkText: '#FFFFFF',
@@ -16,8 +16,8 @@ export const theme = {
     text: '#141414',
     textSecondary: '#74716A',
     textTertiary: '#A3A099',
-    border: '#E5E3DD',
-    borderStrong: '#D8D5CE',
+    border: '#ECEAE5',
+    borderStrong: '#DEDBD6',
     accent: '#0B6BDE',
     accentDark: '#0A58B7',
     accentTint: '#E8F1FD',
@@ -32,7 +32,7 @@ export const theme = {
     info: '#0B6BDE',
     infoTint: '#E8F1FD',
     tabInactive: '#A3A099',
-    barMuted: '#E3E1DB',
+    barMuted: '#E9E7E2',
   },
   spacing: { xs: 4, sm: 8, md: 12, lg: 16, xl: 20, xxl: 24, xxxl: 32 },
   radii: { sm: 10, md: 14, lg: 20, pill: 999 },
