@@ -1,828 +1,497 @@
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
-import * as Haptics from 'expo-haptics';
 import {
-  AlarmClock,
-  Bell,
+  AudioLines,
   Check,
-  ChevronRight,
-  CircleAlert,
   Flame,
-  Moon,
-  PartyPopper,
-  Sparkles,
-  X,
+  Plus,
+  Radio,
+  Target,
+  Trophy,
+  Wind,
+  Zap,
 } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AnimatedIn } from '../../components/AnimatedIn';
-import { AnimatedNumber } from '../../components/AnimatedNumber';
-import { AttendanceBars } from '../../components/AttendanceBars';
-import { Avatar } from '../../components/Avatar';
-import { Card } from '../../components/Card';
-import { ClassCard } from '../../components/ClassCard';
+import { AppHeader } from '../../components/AppHeader';
 import { Ring } from '../../components/Ring';
-import { SectionTitle } from '../../components/Section';
-import { CLASSES_TODAY, GYM, MEMBERS, RECOMMENDATIONS } from '../../data/seed';
-import { rs, rsCompact } from '../../lib/format';
+import { HUB, MILESTONES, RETENTION_RADAR } from '../../data/apex';
 import { theme } from '../../theme/theme';
 
-export default function HomeScreen() {
-  const feesPct = GYM.feesCollected / GYM.feesTarget;
-  const liveClass = CLASSES_TODAY.find((c) => c.state === 'live');
-  const nextClass = CLASSES_TODAY.find((c) => c.state === 'upcoming');
-
-  // ---- Habit loop state (Hook: trigger → action → reward → investment) ----
-  const [inGym, setInGym] = useState(GYM.inGymNow);
-  const [checkins, setCheckins] = useState(GYM.checkinsToday);
-  const [checkedIn, setCheckedIn] = useState<string[]>([]);
-  const [manualMissions, setManualMissions] = useState<string[]>([]);
-  const [recIndex, setRecIndex] = useState(0);
-
-  const expectedNow = MEMBERS.filter((m) => GYM.expectedNowIds.includes(m.id));
-  const checkinMissionDone = checkedIn.length >= expectedNow.length;
-  const missionsDone =
-    (checkinMissionDone ? 1 : 0) +
-    (manualMissions.includes('fees') ? 1 : 0) +
-    (manualMissions.includes('remind') ? 1 : 0);
-  const allMissionsDone = missionsDone === 3;
-  const recommendation = RECOMMENDATIONS[recIndex] ?? null;
-
-  const checkIn = (memberId: string) => {
-    if (checkedIn.includes(memberId)) return;
-    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    setCheckedIn((prev) => [...prev, memberId]);
-    setInGym((n) => n + 1);
-    setCheckins((n) => n + 1);
-  };
-
-  const toggleMission = (id: string) => {
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setManualMissions((prev) => (prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]));
-  };
-
-  const openRecommendation = () => {
-    if (!recommendation) return;
-    if (recommendation.route === 'member' && recommendation.targetId) {
-      router.push(`/member/${recommendation.targetId}`);
-    } else if (recommendation.route === 'payments') {
-      router.push('/(tabs)/payments');
-    } else {
-      router.push('/(tabs)/join');
-    }
-  };
+/** Command Hub — recreated exactly from the owner's reference design. */
+export default function HubScreen() {
+  const [nudged, setNudged] = useState<string[]>([]);
+  const nudge = (id: string) =>
+    setNudged((prev) => (prev.includes(id) ? prev : [...prev, id]));
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
+      <AppHeader />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <AnimatedIn index={0}>
-          <View style={styles.header}>
-            <View style={styles.headerMain}>
-              <Text style={styles.greeting}>
-                {GYM.area} · Evening, {GYM.owner}
-              </Text>
-              <Text style={styles.business}>{GYM.name}</Text>
+          <View style={styles.titleRow}>
+            <View>
+              <Text style={styles.kicker}>HEAD TRAINER DECK</Text>
+              <Text style={styles.h1}>Command Hub</Text>
             </View>
+            <View style={styles.activePill}>
+              <View style={styles.activeDot} />
+              <Text style={styles.activePillText}>Floor Active</Text>
+            </View>
+          </View>
+        </AnimatedIn>
+
+        <AnimatedIn index={1}>
+          <View style={styles.card}>
+            <View style={styles.pulseHead}>
+              <View style={styles.pulseTitleRow}>
+                <Radio size={19} color={theme.colors.accent} />
+                <Text style={styles.pulseTitle}>Live Studio Pulse</Text>
+              </View>
+              <Text style={styles.zoneText}>Zone A • Main Arena</Text>
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.pulseMain}>
+              <View style={styles.pulseStats}>
+                <View style={styles.occupancyRow}>
+                  <Text style={styles.occupancy}>{HUB.occupancyPct}%</Text>
+                  <Text style={styles.occupancyLabel}>Occupancy</Text>
+                </View>
+                <Text style={styles.activeAthletes}>
+                  {HUB.activeAthletes} / {HUB.capacity} Active Athletes
+                </Text>
+                <Text style={styles.surge}>{HUB.surgeNote}</Text>
+              </View>
+              <Ring value={HUB.occupancyPct / 100} size={92} strokeWidth={8}>
+                <Zap size={22} color={theme.colors.accent} fill={theme.colors.accent} />
+              </Ring>
+            </View>
+            <View style={styles.divider} />
+            <View style={styles.envRow}>
+              <View style={styles.envCard}>
+                <View style={styles.envIcon}>
+                  <AudioLines size={17} color={theme.colors.text} />
+                </View>
+                <View>
+                  <Text style={styles.envLabel}>Sound Pressure</Text>
+                  <Text style={styles.envValue}>
+                    {HUB.soundDb} dB <Text style={styles.envState}>{HUB.soundState}</Text>
+                  </Text>
+                </View>
+              </View>
+              <View style={styles.envCard}>
+                <View style={styles.envIcon}>
+                  <Wind size={17} color={theme.colors.text} />
+                </View>
+                <View>
+                  <Text style={styles.envLabel}>Air Quality</Text>
+                  <Text style={styles.envValue}>{HUB.airPpm} ppm</Text>
+                  <Text style={styles.envState}>CO₂</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </AnimatedIn>
+
+        <AnimatedIn index={2}>
+          <View style={styles.actionRow}>
             <Pressable
-              onPress={() => router.push('/paywall')}
+              onPress={() => router.push('/(tabs)/join')}
               accessibilityRole="button"
-              accessibilityLabel="Notifications and Pro"
-              style={styles.bell}
-              hitSlop={8}
-            >
-              <Bell size={21} color={theme.colors.text} />
-              <View style={styles.dot} />
+              accessibilityLabel="Add walk-in"
+              style={({ pressed }) => [styles.walkinBtn, pressed && styles.pressed]}>
+              <Plus size={17} color="#FFFFFF" strokeWidth={2.6} />
+              <Text style={styles.walkinLabel}>+ Add Walk-in</Text>
+            </Pressable>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Flash Challenge"
+              style={({ pressed }) => [styles.flashBtn, pressed && styles.pressed]}>
+              <Zap size={16} color={theme.colors.text} />
+              <Text style={styles.flashLabel}>Flash Challenge</Text>
             </Pressable>
           </View>
         </AnimatedIn>
 
-        {/* ---------- DARK HERO: the hierarchy anchor ---------- */}
-        <AnimatedIn index={1}>
-          <View style={styles.hero}>
-            <View style={styles.heroTopRow}>
-              <View style={styles.liveLabelRow}>
-                <View style={styles.liveDot} />
-                <Text style={styles.heroKicker}>LIVE FLOOR</Text>
+        <AnimatedIn index={3}>
+          <View style={styles.statRow}>
+            <View style={[styles.card, styles.statCard]}>
+              <Text style={styles.statLabel}>Today Revenue</Text>
+              <Text style={styles.statValue}>{HUB.revenue}</Text>
+              <View style={styles.deltaPill}>
+                <Text style={styles.deltaText}>{HUB.revenueDelta}</Text>
               </View>
-              <View style={styles.streakChip}>
-                <Flame size={13} color={theme.colors.accent} />
-                <Text style={styles.streakChipText}>{GYM.ownerStreakDays}-day owner streak</Text>
+              <Text style={styles.statFoot}>vs baseline</Text>
+            </View>
+            <View style={[styles.card, styles.statCard]}>
+              <Text style={styles.statLabel}>Check-ins</Text>
+              <Text style={styles.statValue}>{HUB.checkins}</Text>
+              <Text style={styles.statFoot}>of {HUB.checkinsCap} cap</Text>
+              <View style={styles.miniBarTrack}>
+                <View
+                  style={[
+                    styles.miniBarFill,
+                    { width: `${(HUB.checkins / HUB.checkinsCap) * 100}%` },
+                  ]}
+                />
               </View>
             </View>
-            <View style={styles.heroCountRow}>
-              <AnimatedNumber value={inGym} format={(n) => `${n}`} style={styles.heroCount} />
-              <Text style={styles.heroCapacity}>/ {GYM.capacityNow} on the floor</Text>
-            </View>
-            <Text style={styles.heroSub}>
-              {checkins} check-ins today · your peak (5–8 PM) is starting
-            </Text>
-            <View style={styles.heroGoalRow}>
-              <Ring value={inGym / GYM.floorGoal} size={64} strokeWidth={6}>
-                <Text style={styles.heroRingText}>
-                  {Math.round((inGym / GYM.floorGoal) * 100)}%
-                </Text>
-              </Ring>
-              <View style={styles.heroGoalMain}>
-                <Text style={styles.heroGoalTitle}>Floor goal: {GYM.floorGoal} by 8 PM</Text>
-                <Text style={styles.heroGoalSub}>
-                  {GYM.floorGoal - inGym} more members puts you past it. Every check-in below moves
-                  this ring.
-                </Text>
+            <View style={[styles.card, styles.statCard]}>
+              <Text style={styles.statLabel}>Retention</Text>
+              <Text style={styles.statValue}>{HUB.retention}</Text>
+              <View style={styles.grayPill}>
+                <Text style={styles.grayPillText}>Rolling 30d</Text>
               </View>
-            </View>
-            <View style={styles.heroStats}>
-              <View style={styles.heroStat}>
-                <Text style={styles.heroStatValue}>{GYM.totalMembers}</Text>
-                <Text style={styles.heroStatLabel}>Members</Text>
-              </View>
-              <View style={styles.heroDivider} />
-              <View style={styles.heroStat}>
-                <Text style={[styles.heroStatValue, styles.heroStatAccent]}>
-                  +{GYM.newThisMonth}
-                </Text>
-                <Text style={styles.heroStatLabel}>New this month</Text>
-              </View>
-              <View style={styles.heroDivider} />
-              <View style={styles.heroStat}>
-                <Text style={[styles.heroStatValue, styles.heroStatDanger]}>
-                  {GYM.overdueMembers}
-                </Text>
-                <Text style={styles.heroStatLabel}>Fees overdue</Text>
-              </View>
+              <Text style={styles.statFoot}>Tier 1 Elite</Text>
             </View>
           </View>
         </AnimatedIn>
 
-        {/* ---------- MISSIONS: the addictive layer ---------- */}
-        <AnimatedIn index={2}>
-          <SectionTitle kicker="Habit loop" title={`Today's missions — ${missionsDone} of 3`} />
-          <Card padded={false} style={styles.missionCard}>
-            <MissionRow
-              done={checkinMissionDone}
-              title={`Check in ${expectedNow.length} expected members`}
-              progress={`${checkedIn.length} of ${expectedNow.length} done — use the desk row below`}
-              auto
-            />
-            <MissionRow
-              done={manualMissions.includes('fees')}
-              title="Collect one overdue fee"
-              progress="Imran Ullah · Rs 3,000 · 6 days overdue"
-              onToggle={() => toggleMission('fees')}
-              divider
-            />
-            <MissionRow
-              done={manualMissions.includes('remind')}
-              title="Send one renewal reminder"
-              progress="Fatima Noor expires in 3 days"
-              onToggle={() => toggleMission('remind')}
-              divider
-            />
-          </Card>
-          {allMissionsDone && (
-            <AnimatedIn index={0}>
-              <View style={styles.perfectDay}>
-                <PartyPopper size={20} color={theme.colors.success} />
-                <View style={styles.perfectMain}>
-                  <Text style={styles.perfectTitle}>Perfect day — all missions complete</Text>
-                  <Text style={styles.perfectSub}>
-                    Do it again tomorrow and the streak hits {GYM.ownerStreakDays + 1} days.
-                  </Text>
-                </View>
+        <AnimatedIn index={4}>
+          <View style={styles.card}>
+            <View style={styles.sectionHead}>
+              <View style={styles.pulseTitleRow}>
+                <Target size={19} color={theme.colors.rust} />
+                <Text style={styles.sectionTitle}>Retention Radar</Text>
               </View>
-            </AnimatedIn>
-          )}
-        </AnimatedIn>
-
-        {/* ---------- QUICK CHECK-IN ---------- */}
-        <AnimatedIn index={3}>
-          <SectionTitle kicker="Front desk" title="Expected now — tap to check in" />
-          <Card padded={false} style={styles.checkinCard}>
-            {expectedNow.map((member, i) => {
-              const isIn = checkedIn.includes(member.id);
+              <Text style={styles.viewAll}>View All ›</Text>
+            </View>
+            {RETENTION_RADAR.map((athlete, i) => {
+              const isNudged = nudged.includes(athlete.id);
               return (
-                <View key={member.id} style={[styles.checkinRow, i > 0 && styles.checkinDivider]}>
-                  <Avatar name={member.name} size={40} />
-                  <View style={styles.checkinMain}>
-                    <Text style={styles.checkinName} numberOfLines={1}>
-                      {member.name}
-                    </Text>
-                    <View style={styles.checkinMetaRow}>
-                      <Flame size={12} color={theme.colors.accent} />
-                      <Text style={styles.checkinMeta}>
-                        {member.streakWeeks} wk streak · usually in by now
-                      </Text>
+                <View key={athlete.id} style={[styles.radarRow, i > 0 && styles.rowDivider]}>
+                  <View style={styles.avatarWrap}>
+                    <View style={styles.initialsAvatar}>
+                      <Text style={styles.initialsText}>{athlete.initials}</Text>
                     </View>
+                    <View
+                      style={[
+                        styles.badgeDot,
+                        {
+                          backgroundColor:
+                            athlete.badge === 'red' ? theme.colors.danger : '#F59E0B',
+                        },
+                      ]}
+                    />
+                  </View>
+                  <View style={styles.radarMain}>
+                    <Text style={styles.radarName}>{athlete.name}</Text>
+                    <Text style={styles.radarDetail}>{athlete.detail}</Text>
                   </View>
                   <Pressable
-                    onPress={() => checkIn(member.id)}
-                    disabled={isIn}
+                    onPress={() => nudge(athlete.id)}
+                    disabled={isNudged}
                     accessibilityRole="button"
                     accessibilityLabel={
-                      isIn ? `${member.name} checked in` : `Check in ${member.name}`
+                      isNudged ? `${athlete.name} nudged` : `Nudge ${athlete.name}`
                     }
-                    style={[styles.checkinBtn, isIn && styles.checkinBtnDone]}
-                  >
-                    {isIn ? (
-                      <Check size={16} color="#FFFFFF" strokeWidth={3} />
+                    style={[styles.nudgeBtn, isNudged && styles.nudgeBtnDone]}>
+                    {isNudged ? (
+                      <Check size={14} color="#FFFFFF" strokeWidth={3} />
                     ) : (
-                      <Text style={styles.checkinBtnLabel}>Check in</Text>
+                      <Text style={styles.nudgeLabel}>Nudge</Text>
                     )}
                   </Pressable>
                 </View>
               );
             })}
-          </Card>
-        </AnimatedIn>
-
-        {/* ---------- FOR YOU: intimacy that reacts ---------- */}
-        <AnimatedIn index={4}>
-          <SectionTitle kicker="For you · from your data" title="Recommended next move" />
-          {recommendation ? (
-            <Card>
-              <Text style={styles.recTitle}>{recommendation.title}</Text>
-              <Text style={styles.recReason}>{recommendation.reason}</Text>
-              <View style={styles.recActions}>
-                <Pressable
-                  onPress={openRecommendation}
-                  accessibilityRole="button"
-                  accessibilityLabel={recommendation.actionLabel}
-                  style={styles.recPrimary}
-                >
-                  <Text style={styles.recPrimaryLabel}>{recommendation.actionLabel}</Text>
-                  <ChevronRight size={15} color="#FFFFFF" />
-                </Pressable>
-                <Pressable
-                  onPress={() => setRecIndex((i) => i + 1)}
-                  accessibilityRole="button"
-                  accessibilityLabel="Dismiss this recommendation"
-                  style={styles.recDismiss}
-                >
-                  <X size={15} color={theme.colors.textSecondary} />
-                  <Text style={styles.recDismissLabel}>Not now</Text>
-                </Pressable>
-              </View>
-              <Text style={styles.recCounter}>
-                {recIndex + 1} of {RECOMMENDATIONS.length} · refreshes from tonight’s data
-              </Text>
-            </Card>
-          ) : (
-            <Card>
-              <Text style={styles.recTitle}>You’re all caught up</Text>
-              <Text style={styles.recReason}>
-                No more moves worth your time today. New recommendations generate from tonight’s
-                check-ins and payments.
-              </Text>
-            </Card>
-          )}
+          </View>
         </AnimatedIn>
 
         <AnimatedIn index={5}>
-          <Card style={styles.feesCard}>
-            <View style={styles.feesMain}>
-              <Text style={styles.label}>Fees collected this month</Text>
-              <AnimatedNumber value={GYM.feesCollected} format={rs} style={styles.bigNumber} />
-              <Text style={styles.sub}>
-                of {rs(GYM.feesTarget)} · {rsCompact(GYM.feesOutstanding)} still outstanding
-              </Text>
+          <View style={styles.card}>
+            <View style={styles.sectionHead}>
+              <Text style={styles.sectionTitle}>Floor Milestones</Text>
+              <Text style={styles.liveFeed}>Live feed</Text>
             </View>
-            <Ring value={feesPct} size={82}>
-              <Text style={styles.ringText}>{Math.round(feesPct * 100)}%</Text>
-            </Ring>
-          </Card>
-        </AnimatedIn>
-
-        <AnimatedIn index={6}>
-          <SectionTitle kicker="Don't lose them" title="Needs your attention" />
-          <Card padded={false} style={styles.attentionCard}>
-            <AttentionRow
-              icon={<AlarmClock size={19} color={theme.colors.warning} />}
-              tint={theme.colors.warningTint}
-              title="Fatima Noor expires in 3 days"
-              sub="Quarterly plan · renews on time every cycle. Send the link."
-              onPress={() => router.push('/member/m2')}
-            />
-            <AttentionRow
-              icon={<CircleAlert size={19} color={theme.colors.danger} />}
-              tint={theme.colors.dangerTint}
-              title="Imran Ullah — fee overdue, 11 days absent"
-              sub="Expired 6 days ago. Highest churn risk in the gym."
-              onPress={() => router.push('/member/m3')}
-              divider
-            />
-            <AttentionRow
-              icon={<Moon size={19} color={theme.colors.info} />}
-              tint={theme.colors.infoTint}
-              title="Zubair Ahmad is frozen until 5 Nov"
-              sub="Travel freeze · fee fully paid · 41 days left on resume."
-              onPress={() => router.push('/member/m6')}
-              divider
-            />
-          </Card>
-        </AnimatedIn>
-
-        <AnimatedIn index={7}>
-          <Card style={styles.insightCard}>
-            <View style={styles.insightHead}>
-              <Sparkles size={16} color={theme.colors.accent} />
-              <Text style={styles.insightTitle}>YOUR GYM, IN ONE LINE</Text>
-            </View>
-            <Text style={styles.insightText}>{GYM.insight}</Text>
-            <Text style={styles.insightCaption}>From this week’s check-ins and fee data</Text>
-          </Card>
-        </AnimatedIn>
-
-        <AnimatedIn index={8}>
-          <SectionTitle kicker="This week" title="Attendance — tap a day" />
-          <Card>
-            <AttendanceBars
-              data={GYM.attendanceWeek}
-              labels={GYM.attendanceDays}
-              details={GYM.attendanceDetails}
-            />
-          </Card>
-        </AnimatedIn>
-
-        <AnimatedIn index={9}>
-          <SectionTitle
-            kicker="Schedule"
-            title="On the floor today"
-            actionLabel="All classes"
-            onAction={() => router.push('/(tabs)/schedule')}
-          />
-          {liveClass && <ClassCard gymClass={liveClass} />}
-          {nextClass && <ClassCard gymClass={nextClass} />}
-        </AnimatedIn>
-
-        <AnimatedIn index={10}>
-          <Pressable
-            onPress={() => router.push('/paywall')}
-            accessibilityRole="button"
-            accessibilityLabel="Upgrade to FitTrack Pro"
-            style={({ pressed }) => [styles.proBanner, pressed && styles.pressed]}
-          >
-            <Sparkles size={19} color={theme.colors.accentDark} />
-            <View style={styles.proMain}>
-              <Text style={styles.proTitle}>Free plan — 200 member limit reached soon</Text>
-              <Text style={styles.proSub}>
-                Pro unlocks unlimited members and WhatsApp automation.
-              </Text>
-            </View>
-            <ChevronRight size={18} color={theme.colors.accentDark} />
-          </Pressable>
+            {MILESTONES.map((m) => (
+              <View key={m.id} style={styles.milestoneRow}>
+                <View style={styles.milestoneIcon}>
+                  {m.icon === 'trophy' ? (
+                    <Trophy size={16} color={theme.colors.rust} />
+                  ) : (
+                    <Flame size={16} color={theme.colors.accent} />
+                  )}
+                </View>
+                <View style={styles.milestoneMain}>
+                  <View style={styles.milestoneTop}>
+                    <Text style={styles.milestoneName}>{m.name}</Text>
+                    <Text style={styles.milestoneWhen}>{m.when}</Text>
+                  </View>
+                  <Text style={styles.milestoneText}>{m.text}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
         </AnimatedIn>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-function MissionRow({
-  done,
-  title,
-  progress,
-  onToggle,
-  auto = false,
-  divider = false,
-}: {
-  done: boolean;
-  title: string;
-  progress: string;
-  onToggle?: () => void;
-  auto?: boolean;
-  divider?: boolean;
-}) {
-  return (
-    <View style={[styles.missionRow, divider && styles.missionDivider]}>
-      <Pressable
-        onPress={auto ? undefined : onToggle}
-        disabled={auto}
-        accessibilityRole="checkbox"
-        accessibilityState={{ checked: done }}
-        accessibilityLabel={title}
-        style={[styles.missionBox, done && styles.missionBoxDone]}
-      >
-        {done && <Check size={15} color="#FFFFFF" strokeWidth={3} />}
-      </Pressable>
-      <View style={styles.missionMain}>
-        <Text style={[styles.missionTitle, done && styles.missionTitleDone]}>{title}</Text>
-        <Text style={styles.missionProgress}>{progress}</Text>
-      </View>
-      {done ? (
-        <Text style={styles.missionDoneLabel}>Done</Text>
-      ) : auto ? (
-        <Text style={styles.missionAutoLabel}>Auto</Text>
-      ) : (
-        <Text style={styles.missionAutoLabel}>Tap box</Text>
-      )}
-    </View>
-  );
-}
-
-function AttentionRow({
-  icon,
-  tint,
-  title,
-  sub,
-  onPress,
-  divider = false,
-}: {
-  icon: React.ReactNode;
-  tint: string;
-  title: string;
-  sub: string;
-  onPress: () => void;
-  divider?: boolean;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={title}
-      style={[styles.attentionRow, divider && styles.attentionDivider]}
-    >
-      <View style={[styles.attentionIcon, { backgroundColor: tint }]}>{icon}</View>
-      <View style={styles.attentionMain}>
-        <Text style={styles.attentionTitle} numberOfLines={2}>
-          {title}
-        </Text>
-        <Text style={styles.attentionSub} numberOfLines={2}>
-          {sub}
-        </Text>
-      </View>
-      <ChevronRight size={17} color={theme.colors.textTertiary} />
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.canvas },
   content: { padding: theme.spacing.xl, paddingBottom: theme.spacing.xxxl },
-  header: { flexDirection: 'row', alignItems: 'center', marginBottom: theme.spacing.xl },
-  headerMain: { flex: 1 },
-  greeting: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary },
-  business: {
+  titleRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: theme.spacing.md,
+  },
+  kicker: {
+    fontSize: 11,
+    fontWeight: theme.fontWeight.bold,
+    letterSpacing: 1.6,
+    color: theme.colors.textTertiary,
+  },
+  h1: {
     fontSize: theme.fontSize.display,
     fontWeight: theme.fontWeight.extrabold,
     color: theme.colors.text,
     letterSpacing: -0.5,
-    marginTop: 2,
+    marginTop: theme.spacing.xs,
   },
-  bell: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+  activePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    borderWidth: 1,
+    borderColor: theme.colors.borderStrong,
+    borderRadius: theme.radii.pill,
+    paddingHorizontal: theme.spacing.md,
+    paddingVertical: 6,
+    backgroundColor: theme.colors.surface,
+    marginTop: theme.spacing.xs,
+  },
+  activeDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: theme.colors.success },
+  activePillText: {
+    fontSize: 12,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+  },
+  card: {
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    borderRadius: theme.radii.lg,
+    padding: theme.spacing.xl,
+    marginTop: theme.spacing.xl,
+    ...theme.shadow,
+  },
+  pulseHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: theme.spacing.md,
+  },
+  pulseTitleRow: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm },
+  pulseTitle: {
+    fontSize: theme.fontSize.section,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+  },
+  zoneText: { fontSize: 12, color: theme.colors.textSecondary },
+  divider: {
+    height: 1,
+    backgroundColor: theme.colors.border,
+    marginVertical: theme.spacing.lg,
+  },
+  pulseMain: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.lg },
+  pulseStats: { flex: 1 },
+  occupancyRow: { flexDirection: 'row', alignItems: 'baseline', gap: theme.spacing.sm },
+  occupancy: {
+    fontSize: 46,
+    fontWeight: theme.fontWeight.extrabold,
+    color: theme.colors.text,
+    letterSpacing: -1,
+  },
+  occupancyLabel: { fontSize: theme.fontSize.small, color: theme.colors.textSecondary },
+  activeAthletes: {
+    fontSize: theme.fontSize.body,
+    fontWeight: theme.fontWeight.semibold,
+    color: theme.colors.text,
+    marginTop: theme.spacing.xs,
+  },
+  surge: { fontSize: 12, color: theme.colors.textSecondary, marginTop: theme.spacing.xs },
+  envRow: { flexDirection: 'row', gap: theme.spacing.md },
+  envCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radii.md,
+    padding: theme.spacing.md,
+  },
+  envIcon: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: theme.colors.surface,
     borderWidth: 1,
     borderColor: theme.colors.border,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  dot: {
-    position: 'absolute',
-    top: 10,
-    right: 11,
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: theme.colors.danger,
+  envLabel: { fontSize: 12, color: theme.colors.textSecondary },
+  envValue: {
+    fontSize: theme.fontSize.body,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+    marginTop: 1,
   },
-  // ---- hero ----
-  hero: {
-    backgroundColor: theme.colors.ink,
-    borderRadius: theme.radii.lg,
-    padding: theme.spacing.xl,
+  envState: { fontSize: 12, color: theme.colors.textSecondary, fontWeight: theme.fontWeight.regular },
+  actionRow: { flexDirection: 'row', gap: theme.spacing.md, marginTop: theme.spacing.xl },
+  walkinBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.spacing.xs,
+    backgroundColor: theme.colors.accent,
+    borderRadius: theme.radii.pill,
+    minHeight: 50,
   },
-  heroTopRow: {
+  walkinLabel: { color: '#FFFFFF', fontSize: theme.fontSize.body, fontWeight: theme.fontWeight.semibold },
+  flashBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.spacing.sm,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.borderStrong,
+    borderRadius: theme.radii.pill,
+    minHeight: 50,
+  },
+  flashLabel: { color: theme.colors.text, fontSize: theme.fontSize.body, fontWeight: theme.fontWeight.semibold },
+  pressed: { opacity: 0.85 },
+  statRow: { flexDirection: 'row', gap: theme.spacing.md },
+  statCard: { flex: 1, marginTop: theme.spacing.xl, padding: theme.spacing.lg },
+  statLabel: { fontSize: 12, color: theme.colors.textSecondary },
+  statValue: {
+    fontSize: 21,
+    fontWeight: theme.fontWeight.extrabold,
+    color: theme.colors.text,
+    marginTop: theme.spacing.sm,
+    letterSpacing: -0.3,
+  },
+  deltaPill: {
+    alignSelf: 'flex-start',
+    backgroundColor: theme.colors.successTint,
+    borderRadius: theme.radii.pill,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 3,
+    marginTop: theme.spacing.sm,
+  },
+  deltaText: { fontSize: 12, fontWeight: theme.fontWeight.bold, color: theme.colors.success },
+  grayPill: {
+    alignSelf: 'flex-start',
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radii.pill,
+    paddingHorizontal: theme.spacing.sm,
+    paddingVertical: 3,
+    marginTop: theme.spacing.sm,
+  },
+  grayPillText: { fontSize: 12, fontWeight: theme.fontWeight.semibold, color: theme.colors.textSecondary },
+  statFoot: { fontSize: 12, color: theme.colors.textTertiary, marginTop: theme.spacing.sm },
+  miniBarTrack: {
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: theme.colors.surfaceAlt,
+    marginTop: theme.spacing.sm,
+    overflow: 'hidden',
+  },
+  miniBarFill: { height: '100%', borderRadius: 3, backgroundColor: theme.colors.accent },
+  sectionHead: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: theme.spacing.md,
-  },
-  liveLabelRow: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm },
-  liveDot: { width: 8, height: 8, borderRadius: 4, backgroundColor: theme.colors.accent },
-  heroKicker: {
-    fontSize: 12,
-    fontWeight: theme.fontWeight.bold,
-    letterSpacing: 1.6,
-    color: theme.colors.accent,
-  },
-  streakChip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-    backgroundColor: theme.colors.inkSoft,
-    borderRadius: theme.radii.pill,
-    paddingHorizontal: theme.spacing.md,
-    paddingVertical: 6,
-  },
-  streakChipText: {
-    fontSize: 12,
-    fontWeight: theme.fontWeight.semibold,
-    color: theme.colors.inkText,
-  },
-  heroCountRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    gap: theme.spacing.md,
-    marginTop: theme.spacing.md,
-  },
-  heroCount: {
-    fontSize: theme.fontSize.hero,
-    fontWeight: theme.fontWeight.extrabold,
-    color: theme.colors.inkText,
-    letterSpacing: -1.5,
-  },
-  heroCapacity: { fontSize: theme.fontSize.small, color: theme.colors.inkTextMuted },
-  heroSub: { fontSize: theme.fontSize.caption, color: theme.colors.inkTextMuted, marginTop: 2 },
-  heroGoalRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.lg,
-    marginTop: theme.spacing.xl,
-    backgroundColor: theme.colors.inkSoft,
-    borderRadius: theme.radii.md,
-    padding: theme.spacing.lg,
-  },
-  heroRingText: {
-    fontSize: theme.fontSize.caption,
-    fontWeight: theme.fontWeight.bold,
-    color: theme.colors.inkText,
-  },
-  heroGoalMain: { flex: 1 },
-  heroGoalTitle: {
-    fontSize: theme.fontSize.small,
-    fontWeight: theme.fontWeight.bold,
-    color: theme.colors.inkText,
-  },
-  heroGoalSub: {
-    fontSize: 12,
-    color: theme.colors.inkTextMuted,
-    marginTop: 3,
-    lineHeight: 17,
-  },
-  heroStats: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: theme.spacing.xl,
-    paddingTop: theme.spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.inkSoft,
-  },
-  heroStat: { flex: 1 },
-  heroStatValue: {
-    fontSize: theme.fontSize.section,
-    fontWeight: theme.fontWeight.bold,
-    color: theme.colors.inkText,
-  },
-  heroStatAccent: { color: theme.colors.accent },
-  heroStatDanger: { color: '#F87171' },
-  heroStatLabel: { fontSize: 12, color: theme.colors.inkTextMuted, marginTop: 2 },
-  heroDivider: {
-    width: 1,
-    height: 30,
-    backgroundColor: theme.colors.inkSoft,
-    marginHorizontal: theme.spacing.md,
-  },
-  // ---- missions ----
-  missionCard: { paddingHorizontal: theme.spacing.xl, overflow: 'hidden' },
-  missionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.md,
-    paddingVertical: theme.spacing.lg,
-    minHeight: 64,
-  },
-  missionDivider: { borderTopWidth: 1, borderTopColor: theme.colors.border },
-  missionBox: {
-    width: 30,
-    height: 30,
-    borderRadius: 9,
-    borderWidth: 2,
-    borderColor: theme.colors.borderStrong,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: theme.colors.surface,
-  },
-  missionBoxDone: { backgroundColor: theme.colors.success, borderColor: theme.colors.success },
-  missionMain: { flex: 1 },
-  missionTitle: {
-    fontSize: theme.fontSize.small,
-    fontWeight: theme.fontWeight.bold,
-    color: theme.colors.text,
-  },
-  missionTitleDone: { color: theme.colors.textSecondary, textDecorationLine: 'line-through' },
-  missionProgress: {
-    fontSize: theme.fontSize.caption,
-    color: theme.colors.textSecondary,
-    marginTop: 2,
-  },
-  missionDoneLabel: {
-    fontSize: theme.fontSize.caption,
-    fontWeight: theme.fontWeight.bold,
-    color: theme.colors.success,
-  },
-  missionAutoLabel: { fontSize: 12, color: theme.colors.textTertiary },
-  perfectDay: {
-    flexDirection: 'row',
-    gap: theme.spacing.md,
-    backgroundColor: theme.colors.successTint,
-    borderRadius: theme.radii.lg,
-    padding: theme.spacing.lg,
-    marginTop: theme.spacing.md,
-    alignItems: 'flex-start',
-  },
-  perfectMain: { flex: 1 },
-  perfectTitle: {
-    fontSize: theme.fontSize.small,
-    fontWeight: theme.fontWeight.bold,
-    color: theme.colors.success,
-  },
-  perfectSub: {
-    fontSize: theme.fontSize.caption,
-    color: theme.colors.textSecondary,
-    marginTop: 2,
-    lineHeight: 17,
-  },
-  // ---- check-in ----
-  checkinCard: { paddingHorizontal: theme.spacing.xl, overflow: 'hidden' },
-  checkinRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.md,
-    paddingVertical: theme.spacing.lg,
-    minHeight: 68,
-  },
-  checkinDivider: { borderTopWidth: 1, borderTopColor: theme.colors.border },
-  checkinMain: { flex: 1 },
-  checkinName: {
-    fontSize: theme.fontSize.small,
-    fontWeight: theme.fontWeight.semibold,
-    color: theme.colors.text,
-  },
-  checkinMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
-  checkinMeta: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary },
-  checkinBtn: {
-    minWidth: 88,
-    minHeight: 44,
-    borderRadius: theme.radii.pill,
-    backgroundColor: theme.colors.accent,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: theme.spacing.lg,
-  },
-  checkinBtnDone: { backgroundColor: theme.colors.success, minWidth: 44 },
-  checkinBtnLabel: {
-    color: '#FFFFFF',
-    fontSize: theme.fontSize.caption,
-    fontWeight: theme.fontWeight.bold,
-  },
-  // ---- recommendations ----
-  recTitle: {
-    fontSize: theme.fontSize.title,
-    fontWeight: theme.fontWeight.bold,
-    color: theme.colors.text,
-    lineHeight: 27,
-    letterSpacing: -0.3,
-  },
-  recReason: {
-    fontSize: theme.fontSize.small,
-    color: theme.colors.textSecondary,
-    lineHeight: 20,
-    marginTop: theme.spacing.sm,
-  },
-  recActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.md,
-    marginTop: theme.spacing.lg,
-  },
-  recPrimary: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: theme.colors.ink,
-    borderRadius: theme.radii.pill,
-    paddingHorizontal: theme.spacing.lg,
-    minHeight: 44,
-  },
-  recPrimaryLabel: {
-    color: '#FFFFFF',
-    fontSize: theme.fontSize.caption,
-    fontWeight: theme.fontWeight.bold,
-  },
-  recDismiss: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    minHeight: 44,
-    paddingHorizontal: theme.spacing.sm,
-  },
-  recDismissLabel: {
-    fontSize: theme.fontSize.caption,
-    fontWeight: theme.fontWeight.semibold,
-    color: theme.colors.textSecondary,
-  },
-  recCounter: { fontSize: 12, color: theme.colors.textTertiary, marginTop: theme.spacing.md },
-  // ---- fees / attention / insight ----
-  feesCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.lg,
-    marginTop: theme.spacing.xxl,
-  },
-  feesMain: { flex: 1 },
-  label: {
-    fontSize: theme.fontSize.caption,
-    fontWeight: theme.fontWeight.medium,
-    color: theme.colors.textSecondary,
-  },
-  bigNumber: {
-    fontSize: 30,
-    fontWeight: theme.fontWeight.extrabold,
-    color: theme.colors.text,
-    marginTop: theme.spacing.xs,
-    letterSpacing: -0.5,
-  },
-  sub: {
-    fontSize: theme.fontSize.caption,
-    color: theme.colors.textSecondary,
-    marginTop: 2,
-    lineHeight: 18,
-  },
-  ringText: {
-    fontSize: theme.fontSize.section,
-    fontWeight: theme.fontWeight.bold,
-    color: theme.colors.text,
-  },
-  attentionCard: { overflow: 'hidden' },
-  attentionRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.md,
-    padding: theme.spacing.lg,
-    minHeight: 64,
-  },
-  attentionDivider: { borderTopWidth: 1, borderTopColor: theme.colors.border },
-  attentionIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: theme.radii.sm,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  attentionMain: { flex: 1 },
-  attentionTitle: {
-    fontSize: theme.fontSize.small,
-    fontWeight: theme.fontWeight.semibold,
-    color: theme.colors.text,
-    lineHeight: 19,
-  },
-  attentionSub: {
-    fontSize: theme.fontSize.caption,
-    color: theme.colors.textSecondary,
-    marginTop: 2,
-    lineHeight: 17,
-  },
-  insightCard: {},
-  insightHead: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: theme.spacing.sm,
     marginBottom: theme.spacing.sm,
   },
-  insightTitle: {
-    fontSize: 12,
+  sectionTitle: {
+    fontSize: theme.fontSize.section,
     fontWeight: theme.fontWeight.bold,
-    letterSpacing: 1.1,
-    color: theme.colors.accent,
-  },
-  insightText: {
-    fontSize: theme.fontSize.body,
-    lineHeight: 23,
     color: theme.colors.text,
-    fontWeight: theme.fontWeight.medium,
   },
-  insightCaption: { fontSize: 12, color: theme.colors.textTertiary, marginTop: theme.spacing.sm },
-  proBanner: {
+  viewAll: { fontSize: theme.fontSize.caption, fontWeight: theme.fontWeight.semibold, color: theme.colors.accent },
+  liveFeed: { fontSize: 12, color: theme.colors.textSecondary },
+  radarRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: theme.spacing.md,
-    backgroundColor: theme.colors.accentTint,
-    borderRadius: theme.radii.lg,
-    padding: theme.spacing.lg,
-    marginTop: theme.spacing.xxl,
+    paddingVertical: theme.spacing.lg,
   },
-  pressed: { opacity: 0.8 },
-  proMain: { flex: 1 },
-  proTitle: {
+  rowDivider: { borderTopWidth: 1, borderTopColor: theme.colors.border },
+  avatarWrap: { position: 'relative' },
+  initialsAvatar: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: theme.colors.surfaceAlt,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  initialsText: {
     fontSize: theme.fontSize.small,
-    fontWeight: theme.fontWeight.semibold,
-    color: theme.colors.text,
-  },
-  proSub: {
-    fontSize: theme.fontSize.caption,
+    fontWeight: theme.fontWeight.bold,
     color: theme.colors.textSecondary,
+  },
+  badgeDot: {
+    position: 'absolute',
+    top: -1,
+    right: -1,
+    width: 11,
+    height: 11,
+    borderRadius: 6,
+    borderWidth: 2,
+    borderColor: theme.colors.surface,
+  },
+  radarMain: { flex: 1 },
+  radarName: { fontSize: theme.fontSize.body, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
+  radarDetail: { fontSize: 12, color: theme.colors.textSecondary, marginTop: 2 },
+  nudgeBtn: {
+    backgroundColor: theme.colors.accent,
+    borderRadius: theme.radii.pill,
+    paddingHorizontal: theme.spacing.lg,
+    minHeight: 38,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 74,
+  },
+  nudgeBtnDone: { backgroundColor: theme.colors.success },
+  nudgeLabel: { color: '#FFFFFF', fontSize: theme.fontSize.caption, fontWeight: theme.fontWeight.bold },
+  milestoneRow: {
+    flexDirection: 'row',
+    gap: theme.spacing.md,
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radii.md,
+    padding: theme.spacing.lg,
+    marginTop: theme.spacing.md,
+  },
+  milestoneIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  milestoneMain: { flex: 1 },
+  milestoneTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
+  milestoneName: { fontSize: theme.fontSize.body, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
+  milestoneWhen: { fontSize: 12, color: theme.colors.textTertiary },
+  milestoneText: {
+    fontSize: theme.fontSize.small,
+    color: theme.colors.textSecondary,
+    lineHeight: 19,
     marginTop: 2,
-    lineHeight: 17,
   },
 });

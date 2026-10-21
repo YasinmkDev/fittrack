@@ -1,10 +1,9 @@
-import { View } from 'react-native';
 import { Tabs } from 'expo-router';
-import { CalendarDays, LayoutDashboard, UserPlus, Users, Wallet } from 'lucide-react-native';
+import { BarChart3, Calendar, LayoutGrid, Users } from 'lucide-react-native';
 
 import { theme } from '../../theme/theme';
 
-const ICON_SIZE = 22;
+const ICON_SIZE = 23;
 
 export default function TabsLayout() {
   return (
@@ -18,66 +17,41 @@ export default function TabsLayout() {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.border,
           borderTopWidth: 1,
-          height: 62,
+          height: 64,
           paddingTop: 6,
         },
-      }}
-    >
+      }}>
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <LayoutDashboard size={ICON_SIZE} color={color} />,
+          title: 'Hub',
+          tabBarIcon: ({ color }) => <LayoutGrid size={ICON_SIZE} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="members"
+        name="roster"
         options={{
-          title: 'Members',
+          title: 'Roster',
           tabBarIcon: ({ color }) => <Users size={ICON_SIZE} color={color} />,
-        }}
-      />
-      <Tabs.Screen
-        name="join"
-        options={{
-          title: 'Join',
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                width: 40,
-                height: 40,
-                borderRadius: 20,
-                backgroundColor: focused ? theme.colors.accent : theme.colors.ink,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginTop: -6,
-              }}
-            >
-              <UserPlus size={20} color="#FFFFFF" />
-            </View>
-          ),
-          tabBarLabelStyle: {
-            fontSize: 11,
-            fontWeight: theme.fontWeight.medium,
-            marginTop: 2,
-            color: theme.colors.text,
-          },
         }}
       />
       <Tabs.Screen
         name="schedule"
         options={{
           title: 'Schedule',
-          tabBarIcon: ({ color }) => <CalendarDays size={ICON_SIZE} color={color} />,
+          tabBarIcon: ({ color }) => <Calendar size={ICON_SIZE} color={color} />,
         }}
       />
       <Tabs.Screen
-        name="payments"
+        name="leaderboard"
         options={{
-          title: 'Payments',
-          tabBarIcon: ({ color }) => <Wallet size={ICON_SIZE} color={color} />,
+          title: 'Leaderboard',
+          tabBarIcon: ({ color }) => <BarChart3 size={ICON_SIZE} color={color} />,
         }}
       />
+      {/* Kept from the FitTrack build; reachable from Hub/Roster actions, not tabs. */}
+      <Tabs.Screen name="join" options={{ href: null }} />
+      <Tabs.Screen name="payments" options={{ href: null }} />
     </Tabs>
   );
 }

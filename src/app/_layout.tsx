@@ -22,7 +22,7 @@ export default function RootLayout() {
       >
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="member/[id]" options={{ title: 'Member' }} />
-        <Stack.Screen name="paywall" options={{ title: 'FitTrack Pro', presentation: 'modal' }} />
+        <Stack.Screen name="paywall" options={{ title: 'APEX Pro', presentation: 'modal' }} />
       </Stack>
     </>
   );
