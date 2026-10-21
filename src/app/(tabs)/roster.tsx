@@ -31,12 +31,16 @@ export default function RosterScreen() {
   const [chip, setChip] = useState('all');
   const [query, setQuery] = useState('');
   const [acted, setActed] = useState<string[]>([]);
+  const [sortAsc, setSortAsc] = useState(false);
+  const [bioOpen, setBioOpen] = useState(false);
 
   const athletes = useMemo(() => {
     const byChip = chip === 'all' ? ATHLETES : ATHLETES.filter((a) => a.cohort.includes(chip));
     const q = query.trim().toLowerCase();
-    return q ? byChip.filter((a) => a.name.toLowerCase().includes(q)) : byChip;
-  }, [chip, query]);
+    const filtered = q ? byChip.filter((a) => a.name.toLowerCase().includes(q)) : byChip;
+    const loadOf = (a: Athlete) => parseFloat(a.stats[0].value.replace(/[^0-9.]/g, '')) || 0;
+    return [...filtered].sort((a, b) => (sortAsc ? loadOf(a) - loadOf(b) : loadOf(b) - loadOf(a)));
+  }, [chip, query, sortAsc]);
 
   const act = (id: string) =>
     setActed((prev) => (prev.includes(id) ? prev : [...prev, id]));
@@ -95,8 +99,43 @@ export default function RosterScreen() {
                 <Text style={styles.spotFootText}>
                   Heart Rate Variability: {SPOTLIGHT.hrv}
                 </Text>
-                <Text style={styles.biomarkers}>Biomarkers ›</Text>
+                <Pressable
+                  onPress={() => setBioOpen((v) => !v)}
+                  accessibilityRole="button"
+                  accessibilityState={{ expanded: bioOpen }}
+                  accessibilityLabel={bioOpen ? 'Hide biomarkers' : 'Show biomarkers'}
+                  hitSlop={8}>
+                  <Text style={styles.biomarkers}>{bioOpen ? 'Hide ›' : 'Biomarkers ›'}</Text>
+                </Pressable>
               </View>
+              {bioOpen && (
+                <View style={styles.bioPanel}>
+                  <View style={styles.bioCol}>
+                    <Text style={styles.bioLabel} numberOfLines={1}>
+                      Resting HR
+                    </Text>
+                    <Text style={styles.bioValue} numberOfLines={1} adjustsFontSizeToFit>
+                      52 bpm
+                    </Text>
+                  </View>
+                  <View style={[styles.bioCol, styles.bioColDivider]}>
+                    <Text style={styles.bioLabel} numberOfLines={1}>
+                      Sleep Score
+                    </Text>
+                    <Text style={styles.bioValue} numberOfLines={1} adjustsFontSizeToFit>
+                      91 / 100
+                    </Text>
+                  </View>
+                  <View style={[styles.bioCol, styles.bioColDivider]}>
+                    <Text style={styles.bioLabel} numberOfLines={1}>
+                      Body Mass
+                    </Text>
+                    <Text style={styles.bioValue} numberOfLines={1} adjustsFontSizeToFit>
+                      61.2 kg
+                    </Text>
+                  </View>
+                </View>
+              )}
             </View>
 
             <View style={styles.searchBox}>
@@ -136,7 +175,13 @@ export default function RosterScreen() {
 
             <View style={styles.cohortRow}>
               <Text style={styles.cohortLabel}>ACTIVE COHORT ({ATHLETES.length})</Text>
-              <Text style={styles.sortBy}>Sort by Load</Text>
+              <Pressable
+                onPress={() => setSortAsc((v) => !v)}
+                accessibilityRole="button"
+                accessibilityLabel={sortAsc ? 'Sorted by load, lowest first' : 'Sorted by load, highest first'}
+                hitSlop={8}>
+                <Text style={styles.sortBy}>Sort by Load {sortAsc ? '↑' : '↓'}</Text>
+              </Pressable>
             </View>
           </View>
         }
@@ -187,7 +232,9 @@ function AthleteCard({
       <View style={styles.athleteHead}>
         <Image source={{ uri: athlete.photo }} style={styles.photo} />
         <View style={styles.athleteMain}>
-          <Text style={styles.athleteName}>{athlete.name}</Text>
+          <Text style={styles.athleteName} numberOfLines={1}>
+            {athlete.name}
+          </Text>
           <Text style={styles.athleteProgram}>{athlete.program}</Text>
         </View>
         <View
@@ -197,6 +244,7 @@ function AthleteCard({
             athlete.statusTone === 'done' && styles.statusPillDone,
           ]}>
           <Text
+            numberOfLines={1}
             style={[
               styles.statusText,
               athlete.statusTone === 'rust' && styles.statusTextRust,
@@ -208,8 +256,12 @@ function AthleteCard({
       <View style={styles.statPanel}>
         {athlete.stats.map((stat, i) => (
           <View key={stat.label} style={[styles.statCol, i > 0 && styles.statColDivider]}>
-            <Text style={styles.statColLabel}>{stat.label}</Text>
-            <Text style={styles.statColValue}>{stat.value}</Text>
+            <Text style={styles.statColLabel} numberOfLines={1} adjustsFontSizeToFit>
+              {stat.label}
+            </Text>
+            <Text style={styles.statColValue} numberOfLines={1} adjustsFontSizeToFit>
+              {stat.value}
+            </Text>
           </View>
         ))}
       </View>
@@ -327,7 +379,28 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.lg,
     gap: theme.spacing.md,
   },
-  spotFootText: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary },
+  spotFootText: {
+    fontSize: theme.fontSize.caption,
+    color: theme.colors.textSecondary,
+    flex: 1,
+    minWidth: 0,
+  },
+  bioPanel: {
+    flexDirection: 'row',
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radii.md,
+    paddingVertical: theme.spacing.md,
+    marginTop: theme.spacing.lg,
+  },
+  bioCol: { flex: 1, minWidth: 0, alignItems: 'center', paddingHorizontal: theme.spacing.xs },
+  bioColDivider: { borderLeftWidth: 1, borderLeftColor: theme.colors.border },
+  bioLabel: { fontSize: 11, color: theme.colors.textSecondary },
+  bioValue: {
+    fontSize: theme.fontSize.body,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+    marginTop: 3,
+  },
   biomarkers: { fontSize: theme.fontSize.caption, fontWeight: theme.fontWeight.semibold, color: theme.colors.accent },
   searchBox: {
     flexDirection: 'row',
@@ -380,7 +453,7 @@ const styles = StyleSheet.create({
   },
   athleteHead: { flexDirection: 'row', alignItems: 'flex-start', gap: theme.spacing.md },
   photo: { width: 48, height: 48, borderRadius: 24, backgroundColor: theme.colors.surfaceAlt },
-  athleteMain: { flex: 1 },
+  athleteMain: { flex: 1, minWidth: 0 },
   athleteName: { fontSize: 17, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
   athleteProgram: { fontSize: 12, color: theme.colors.textSecondary, marginTop: 2, lineHeight: 16 },
   statusPill: {
@@ -400,7 +473,7 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.md,
     marginTop: theme.spacing.lg,
   },
-  statCol: { flex: 1, alignItems: 'center', paddingHorizontal: theme.spacing.xs },
+  statCol: { flex: 1, minWidth: 0, alignItems: 'center', paddingHorizontal: theme.spacing.xs },
   statColDivider: { borderLeftWidth: 1, borderLeftColor: theme.colors.border },
   statColLabel: { fontSize: 11, color: theme.colors.textSecondary },
   statColValue: {
@@ -417,7 +490,7 @@ const styles = StyleSheet.create({
     marginTop: theme.spacing.lg,
   },
   footLeft: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm, flex: 1 },
-  footText: { fontSize: 12, color: theme.colors.textSecondary },
+  footText: { fontSize: 12, color: theme.colors.textSecondary, flexShrink: 1 },
   actionBtn: {
     backgroundColor: theme.colors.accent,
     borderRadius: theme.radii.pill,
