@@ -17,14 +17,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { AnimatedIn } from '../../components/AnimatedIn';
 import { AppHeader } from '../../components/AppHeader';
 import { Ring } from '../../components/Ring';
-import { HUB, MILESTONES, RETENTION_RADAR } from '../../data/apex';
+import { HUB, MILESTONES, RETENTION_RADAR, RETENTION_RADAR_EXTRA } from '../../data/apex';
 import { theme } from '../../theme/theme';
 
 /** Command Hub — recreated exactly from the owner's reference design. */
 export default function HubScreen() {
   const [nudged, setNudged] = useState<string[]>([]);
+  const [flashLive, setFlashLive] = useState(false);
+  const [radarExpanded, setRadarExpanded] = useState(false);
   const nudge = (id: string) =>
     setNudged((prev) => (prev.includes(id) ? prev : [...prev, id]));
+
+  const radarList = radarExpanded
+    ? [...RETENTION_RADAR, ...RETENTION_RADAR_EXTRA]
+    : RETENTION_RADAR;
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -59,7 +65,7 @@ export default function HubScreen() {
                   <Text style={styles.occupancy}>{HUB.occupancyPct}%</Text>
                   <Text style={styles.occupancyLabel}>Occupancy</Text>
                 </View>
-                <Text style={styles.activeAthletes}>
+                <Text style={styles.activeAthletes} numberOfLines={1} adjustsFontSizeToFit>
                   {HUB.activeAthletes} / {HUB.capacity} Active Athletes
                 </Text>
                 <Text style={styles.surge}>{HUB.surgeNote}</Text>
@@ -74,9 +80,11 @@ export default function HubScreen() {
                 <View style={styles.envIcon}>
                   <AudioLines size={17} color={theme.colors.text} />
                 </View>
-                <View>
-                  <Text style={styles.envLabel}>Sound Pressure</Text>
-                  <Text style={styles.envValue}>
+                <View style={styles.envText}>
+                  <Text style={styles.envLabel} numberOfLines={1}>
+                    Sound Pressure
+                  </Text>
+                  <Text style={styles.envValue} numberOfLines={1} adjustsFontSizeToFit>
                     {HUB.soundDb} dB <Text style={styles.envState}>{HUB.soundState}</Text>
                   </Text>
                 </View>
@@ -85,9 +93,13 @@ export default function HubScreen() {
                 <View style={styles.envIcon}>
                   <Wind size={17} color={theme.colors.text} />
                 </View>
-                <View>
-                  <Text style={styles.envLabel}>Air Quality</Text>
-                  <Text style={styles.envValue}>{HUB.airPpm} ppm</Text>
+                <View style={styles.envText}>
+                  <Text style={styles.envLabel} numberOfLines={1}>
+                    Air Quality
+                  </Text>
+                  <Text style={styles.envValue} numberOfLines={1} adjustsFontSizeToFit>
+                    {HUB.airPpm} ppm
+                  </Text>
                   <Text style={styles.envState}>CO₂</Text>
                 </View>
               </View>
@@ -106,11 +118,26 @@ export default function HubScreen() {
               <Text style={styles.walkinLabel}>+ Add Walk-in</Text>
             </Pressable>
             <Pressable
+              onPress={() => setFlashLive((v) => !v)}
               accessibilityRole="button"
-              accessibilityLabel="Flash Challenge"
-              style={({ pressed }) => [styles.flashBtn, pressed && styles.pressed]}>
-              <Zap size={16} color={theme.colors.text} />
-              <Text style={styles.flashLabel}>Flash Challenge</Text>
+              accessibilityState={{ selected: flashLive }}
+              accessibilityLabel={flashLive ? 'Flash Challenge is live' : 'Start flash challenge'}
+              style={({ pressed }) => [
+                styles.flashBtn,
+                flashLive && styles.flashBtnLive,
+                pressed && styles.pressed,
+              ]}>
+              <Zap
+                size={16}
+                color={flashLive ? theme.colors.accent : theme.colors.text}
+                fill={flashLive ? theme.colors.accent : 'transparent'}
+              />
+              <Text
+                style={[styles.flashLabel, flashLive && styles.flashLabelLive]}
+                numberOfLines={1}
+                adjustsFontSizeToFit>
+                {flashLive ? 'Challenge Live' : 'Flash Challenge'}
+              </Text>
             </Pressable>
           </View>
         </AnimatedIn>
@@ -118,16 +145,24 @@ export default function HubScreen() {
         <AnimatedIn index={3}>
           <View style={styles.statRow}>
             <View style={[styles.card, styles.statCard]}>
-              <Text style={styles.statLabel}>Today Revenue</Text>
-              <Text style={styles.statValue}>{HUB.revenue}</Text>
+              <Text style={styles.statLabel} numberOfLines={1}>
+                Today Revenue
+              </Text>
+              <Text style={styles.statValue} numberOfLines={1} adjustsFontSizeToFit>
+                {HUB.revenue}
+              </Text>
               <View style={styles.deltaPill}>
                 <Text style={styles.deltaText}>{HUB.revenueDelta}</Text>
               </View>
               <Text style={styles.statFoot}>vs baseline</Text>
             </View>
             <View style={[styles.card, styles.statCard]}>
-              <Text style={styles.statLabel}>Check-ins</Text>
-              <Text style={styles.statValue}>{HUB.checkins}</Text>
+              <Text style={styles.statLabel} numberOfLines={1}>
+                Check-ins
+              </Text>
+              <Text style={styles.statValue} numberOfLines={1} adjustsFontSizeToFit>
+                {HUB.checkins}
+              </Text>
               <Text style={styles.statFoot}>of {HUB.checkinsCap} cap</Text>
               <View style={styles.miniBarTrack}>
                 <View
@@ -139,8 +174,12 @@ export default function HubScreen() {
               </View>
             </View>
             <View style={[styles.card, styles.statCard]}>
-              <Text style={styles.statLabel}>Retention</Text>
-              <Text style={styles.statValue}>{HUB.retention}</Text>
+              <Text style={styles.statLabel} numberOfLines={1}>
+                Retention
+              </Text>
+              <Text style={styles.statValue} numberOfLines={1} adjustsFontSizeToFit>
+                {HUB.retention}
+              </Text>
               <View style={styles.grayPill}>
                 <Text style={styles.grayPillText}>Rolling 30d</Text>
               </View>
@@ -156,9 +195,16 @@ export default function HubScreen() {
                 <Target size={19} color={theme.colors.rust} />
                 <Text style={styles.sectionTitle}>Retention Radar</Text>
               </View>
-              <Text style={styles.viewAll}>View All ›</Text>
+              <Pressable
+                onPress={() => setRadarExpanded((v) => !v)}
+                accessibilityRole="button"
+                accessibilityState={{ expanded: radarExpanded }}
+                accessibilityLabel={radarExpanded ? 'Show fewer athletes' : 'View all at-risk athletes'}
+                hitSlop={8}>
+                <Text style={styles.viewAll}>{radarExpanded ? 'Show Less ›' : 'View All ›'}</Text>
+              </Pressable>
             </View>
-            {RETENTION_RADAR.map((athlete, i) => {
+            {radarList.map((athlete, i) => {
               const isNudged = nudged.includes(athlete.id);
               return (
                 <View key={athlete.id} style={[styles.radarRow, i > 0 && styles.rowDivider]}>
@@ -177,7 +223,9 @@ export default function HubScreen() {
                     />
                   </View>
                   <View style={styles.radarMain}>
-                    <Text style={styles.radarName}>{athlete.name}</Text>
+                    <Text style={styles.radarName} numberOfLines={1}>
+                      {athlete.name}
+                    </Text>
                     <Text style={styles.radarDetail}>{athlete.detail}</Text>
                   </View>
                   <Pressable
@@ -217,7 +265,9 @@ export default function HubScreen() {
                 </View>
                 <View style={styles.milestoneMain}>
                   <View style={styles.milestoneTop}>
-                    <Text style={styles.milestoneName}>{m.name}</Text>
+                    <Text style={styles.milestoneName} numberOfLines={1}>
+                      {m.name}
+                    </Text>
                     <Text style={styles.milestoneWhen}>{m.when}</Text>
                   </View>
                   <Text style={styles.milestoneText}>{m.text}</Text>
@@ -307,7 +357,11 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     letterSpacing: -1,
   },
-  occupancyLabel: { fontSize: theme.fontSize.small, color: theme.colors.textSecondary },
+  occupancyLabel: {
+    fontSize: theme.fontSize.small,
+    color: theme.colors.textSecondary,
+    flexShrink: 1,
+  },
   activeAthletes: {
     fontSize: theme.fontSize.body,
     fontWeight: theme.fontWeight.semibold,
@@ -335,6 +389,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  envText: { flex: 1, minWidth: 0 },
   envLabel: { fontSize: 12, color: theme.colors.textSecondary },
   envValue: {
     fontSize: theme.fontSize.body,
@@ -367,7 +422,14 @@ const styles = StyleSheet.create({
     borderRadius: theme.radii.pill,
     minHeight: 50,
   },
-  flashLabel: { color: theme.colors.text, fontSize: theme.fontSize.body, fontWeight: theme.fontWeight.semibold },
+  flashLabel: {
+    color: theme.colors.text,
+    fontSize: theme.fontSize.body,
+    fontWeight: theme.fontWeight.semibold,
+    flexShrink: 1,
+  },
+  flashBtnLive: { backgroundColor: theme.colors.accentTint, borderColor: theme.colors.accent },
+  flashLabelLive: { color: theme.colors.accent },
   pressed: { opacity: 0.85 },
   statRow: { flexDirection: 'row', gap: theme.spacing.md },
   statCard: { flex: 1, marginTop: theme.spacing.xl, padding: theme.spacing.lg },
@@ -452,7 +514,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: theme.colors.surface,
   },
-  radarMain: { flex: 1 },
+  radarMain: { flex: 1, minWidth: 0 },
   radarName: { fontSize: theme.fontSize.body, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
   radarDetail: { fontSize: 12, color: theme.colors.textSecondary, marginTop: 2 },
   nudgeBtn: {
@@ -484,9 +546,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  milestoneMain: { flex: 1 },
-  milestoneTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
-  milestoneName: { fontSize: theme.fontSize.body, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
+  milestoneMain: { flex: 1, minWidth: 0 },
+  milestoneTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    gap: theme.spacing.sm,
+  },
+  milestoneName: {
+    fontSize: theme.fontSize.body,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+    flexShrink: 1,
+  },
   milestoneWhen: { fontSize: 12, color: theme.colors.textTertiary },
   milestoneText: {
     fontSize: theme.fontSize.small,
