@@ -1,7 +1,16 @@
 import { useMemo, useState } from 'react';
-import { FlatList, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  FlatList,
+  Pressable,
+  ScrollView,
+  Share,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { router } from 'expo-router';
-import { SearchX } from 'lucide-react-native';
+import { Search, SearchX, Share2 } from 'lucide-react-native';
 import Animated, { FadeInDown, FadeOut, LinearTransition } from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -21,19 +30,45 @@ const FILTERS: { id: Filter; label: string }[] = [
 
 export default function MembersScreen() {
   const [filter, setFilter] = useState<Filter>('all');
+  const [query, setQuery] = useState('');
 
-  const members = useMemo(
-    () => (filter === 'all' ? MEMBERS : MEMBERS.filter((m) => m.status === filter)),
-    [filter],
-  );
+  const members = useMemo(() => {
+    const byStatus = filter === 'all' ? MEMBERS : MEMBERS.filter((m) => m.status === filter);
+    const q = query.trim().toLowerCase();
+    return q ? byStatus.filter((m) => m.name.toLowerCase().includes(q)) : byStatus;
+  }, [filter, query]);
+
+  const shareInvite = async () => {
+    try {
+      await Share.share({
+        message:
+          'Train at PowerHouse Gym, Mingora — join with my invite and get Rs 500 off your first plan. I get Rs 500 too. Ask for Yasin at the desk. (via FitTrack)',
+      });
+    } catch {
+      // share sheet dismissed — nothing to do
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
       <View style={styles.header}>
+        <Text style={styles.kicker}>Your people</Text>
         <Text style={styles.title}>Members</Text>
         <Text style={styles.subtitle}>
           {GYM.totalMembers} total · showing {members.length} here
         </Text>
+        <View style={styles.searchBox}>
+          <Search size={17} color={theme.colors.textTertiary} />
+          <TextInput
+            value={query}
+            onChangeText={setQuery}
+            placeholder="Search by name…"
+            placeholderTextColor={theme.colors.textTertiary}
+            style={styles.searchInput}
+            accessibilityLabel="Search members by name"
+            returnKeyType="search"
+          />
+        </View>
       </View>
 
       <ScrollView
@@ -68,6 +103,24 @@ export default function MembersScreen() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.list}
         showsVerticalScrollIndicator={false}
+        ListHeaderComponent={
+          <View style={styles.inviteCard}>
+            <Text style={styles.inviteKicker}>GROW THE GYM</Text>
+            <Text style={styles.inviteTitle}>Give Rs 500, get Rs 500</Text>
+            <Text style={styles.inviteText}>
+              Members who invite a friend train longer. Send your invite — the Rs 500 lands on
+              both plans when they join.
+            </Text>
+            <Pressable
+              onPress={shareInvite}
+              accessibilityRole="button"
+              accessibilityLabel="Share gym invite"
+              style={styles.inviteBtn}>
+              <Share2 size={15} color={theme.colors.ink} />
+              <Text style={styles.inviteBtnLabel}>Share invite</Text>
+            </Pressable>
+          </View>
+        }
         renderItem={({ item, index }) => (
           <Animated.View
             entering={FadeInDown.delay(Math.min(index, 8) * 40)
@@ -96,10 +149,71 @@ export default function MembersScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.canvas },
   header: { paddingHorizontal: theme.spacing.xl, paddingTop: theme.spacing.sm },
+  kicker: {
+    fontSize: 11,
+    fontWeight: theme.fontWeight.bold,
+    letterSpacing: 1.4,
+    color: theme.colors.accent,
+    textTransform: 'uppercase',
+  },
   title: {
     fontSize: theme.fontSize.display,
-    fontWeight: theme.fontWeight.bold,
+    fontWeight: theme.fontWeight.extrabold,
     color: theme.colors.text,
+    letterSpacing: -0.5,
+  },
+  searchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.borderStrong,
+    borderRadius: theme.radii.md,
+    paddingHorizontal: theme.spacing.md,
+    minHeight: 48,
+    marginTop: theme.spacing.lg,
+  },
+  searchInput: { flex: 1, fontSize: theme.fontSize.body, color: theme.colors.text },
+  inviteCard: {
+    backgroundColor: theme.colors.ink,
+    borderRadius: theme.radii.lg,
+    padding: theme.spacing.xl,
+    marginBottom: theme.spacing.lg,
+  },
+  inviteKicker: {
+    fontSize: 11,
+    fontWeight: theme.fontWeight.bold,
+    letterSpacing: 1.6,
+    color: theme.colors.accent,
+  },
+  inviteTitle: {
+    fontSize: theme.fontSize.title,
+    fontWeight: theme.fontWeight.extrabold,
+    color: theme.colors.inkText,
+    marginTop: theme.spacing.sm,
+  },
+  inviteText: {
+    fontSize: theme.fontSize.small,
+    color: theme.colors.inkTextMuted,
+    lineHeight: 20,
+    marginTop: theme.spacing.xs,
+  },
+  inviteBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.sm,
+    alignSelf: 'flex-start',
+    backgroundColor: '#FFFFFF',
+    borderRadius: theme.radii.pill,
+    paddingHorizontal: theme.spacing.lg,
+    minHeight: 42,
+    marginTop: theme.spacing.lg,
+  },
+  inviteBtnLabel: {
+    fontSize: theme.fontSize.caption,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.ink,
   },
   subtitle: {
     fontSize: theme.fontSize.small,
