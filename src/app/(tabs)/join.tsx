@@ -230,7 +230,7 @@ export default function JoinScreen() {
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.canvas },
   flex: { flex: 1 },
-  content: { padding: theme.spacing.xl, paddingBottom: theme.spacing.xxxl },
+  content: { padding: theme.spacing.xl, paddingBottom: 120 },
   header: { marginBottom: theme.spacing.xl },
   stepsWrap: { marginTop: theme.spacing.xl },
   stepsRow: {

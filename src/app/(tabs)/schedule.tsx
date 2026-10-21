@@ -301,7 +301,7 @@ function SessionCard({
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.canvas },
-  content: { padding: theme.spacing.xl, paddingBottom: theme.spacing.xxxl },
+  content: { padding: theme.spacing.xl, paddingBottom: 120 },
   titleRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
     color: theme.colors.textSecondary,
     marginTop: theme.spacing.xs,
   },
-  list: { padding: theme.spacing.xl, paddingTop: theme.spacing.lg },
+  list: { padding: theme.spacing.xl, paddingTop: theme.spacing.lg, paddingBottom: 120 },
   spotCard: {
     backgroundColor: theme.colors.surface,
     borderWidth: 1,

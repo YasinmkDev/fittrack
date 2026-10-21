@@ -253,7 +253,7 @@ function PodiumCard({
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: theme.colors.canvas },
-  content: { padding: theme.spacing.xl, paddingBottom: theme.spacing.xxxl },
+  content: { padding: theme.spacing.xl, paddingBottom: 120 },
   card: {
     backgroundColor: theme.colors.surface,
     borderWidth: 1,
