@@ -13,9 +13,32 @@ export default function ScheduleScreen() {
   const [selectedDay, setSelectedDay] = useState('24');
   const [checkedIn, setCheckedIn] = useState<string[]>([]);
   const [filterOn, setFilterOn] = useState(false);
+  const [added, setAdded] = useState<Session[]>([]);
+  const [expanded, setExpanded] = useState<string[]>([]);
 
   const checkIn = (id: string) =>
     setCheckedIn((prev) => (prev.includes(id) ? prev : [...prev, id]));
+  const toggleExpanded = (id: string) =>
+    setExpanded((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+  const addSlot = () =>
+    setAdded((prev) => [
+      ...prev,
+      {
+        id: `new-${prev.length + 1}`,
+        time: '07:00 PM',
+        duration: '60 min',
+        badge: 'Open (0/16)',
+        badgeTone: 'gray',
+        name: 'New Class Slot',
+        location: 'Main Arena • Zone A',
+        coach: 'Unassigned',
+        coachRole: 'Coach to be confirmed',
+        coachPhoto: 'https://randomuser.me/api/portraits/women/12.jpg',
+        action: 'details',
+      },
+    ]);
+
+  const sessions = [...SESSIONS, ...added];
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -112,18 +135,21 @@ export default function ScheduleScreen() {
           </View>
         </AnimatedIn>
 
-        {SESSIONS.map((session, i) => (
+        {sessions.map((session, i) => (
           <AnimatedIn key={session.id} index={4 + i}>
             <SessionCard
               session={session}
               checkedIn={checkedIn.includes(session.id)}
+              expanded={expanded.includes(session.id)}
               onCheckIn={() => checkIn(session.id)}
+              onToggleExpanded={() => toggleExpanded(session.id)}
             />
           </AnimatedIn>
         ))}
 
-        <AnimatedIn index={4 + SESSIONS.length}>
+        <AnimatedIn index={4 + sessions.length}>
           <Pressable
+            onPress={addSlot}
             accessibilityRole="button"
             accessibilityLabel="Add class slot"
             style={({ pressed }) => [styles.addBtn, pressed && styles.pressed]}>
@@ -139,11 +165,15 @@ export default function ScheduleScreen() {
 function SessionCard({
   session,
   checkedIn,
+  expanded,
   onCheckIn,
+  onToggleExpanded,
 }: {
   session: Session;
   checkedIn: boolean;
+  expanded: boolean;
   onCheckIn: () => void;
+  onToggleExpanded: () => void;
 }) {
   const telemetry = session.variant === 'telemetry';
   return (
@@ -193,20 +223,45 @@ function SessionCard({
                 style={styles.stackAvatar}
               />
             </View>
-            <Text style={styles.viewAnalytics}>View Analytics ›</Text>
+            <Pressable
+              onPress={onToggleExpanded}
+              accessibilityRole="button"
+              accessibilityState={{ expanded }}
+              accessibilityLabel={expanded ? 'Hide analytics' : 'View analytics'}
+              hitSlop={8}>
+              <Text style={styles.viewAnalytics}>
+                {expanded ? 'Hide Analytics ›' : 'View Analytics ›'}
+              </Text>
+            </Pressable>
           </View>
+          {expanded && (
+            <View style={[styles.expandPanel, styles.expandPanelOnAlt]}>
+              <Text style={styles.expandText}>
+                12 athletes booked • Avg HR Zone 4 (88% max) • Projected burn 640 kcal • Coach
+                telemetry linked
+              </Text>
+            </View>
+          )}
         </View>
       ) : (
         <View style={styles.coachRow}>
           <Image source={{ uri: session.coachPhoto }} style={styles.coachPhoto} />
           <View style={styles.coachMain}>
-            <Text style={styles.coachName}>{session.coach}</Text>
-            <Text style={styles.coachRole}>{session.coachRole}</Text>
+            <Text style={styles.coachName} numberOfLines={1}>
+              {session.coach}
+            </Text>
+            <Text style={styles.coachRole} numberOfLines={1}>
+              {session.coachRole}
+            </Text>
           </View>
           {session.rightTop ? (
             <View style={styles.rightStats}>
-              <Text style={styles.rightTop}>{session.rightTop}</Text>
-              <Text style={styles.rightBottom}>{session.rightBottom}</Text>
+              <Text style={styles.rightTop} numberOfLines={1}>
+                {session.rightTop}
+              </Text>
+              <Text style={styles.rightBottom} numberOfLines={1}>
+                {session.rightBottom}
+              </Text>
             </View>
           ) : session.action === 'checkin' ? (
             <Pressable
@@ -220,10 +275,24 @@ function SessionCard({
               </Text>
             </Pressable>
           ) : (
-            <View style={styles.detailsBtn}>
-              <Text style={styles.detailsLabel}>Details</Text>
-            </View>
+            <Pressable
+              onPress={onToggleExpanded}
+              accessibilityRole="button"
+              accessibilityState={{ expanded }}
+              accessibilityLabel={expanded ? `Hide details for ${session.name}` : `Details for ${session.name}`}
+              style={[styles.detailsBtn, expanded && styles.detailsBtnActive]}>
+              <Text style={[styles.detailsLabel, expanded && styles.detailsLabelActive]}>
+                {expanded ? 'Hide' : 'Details'}
+              </Text>
+            </Pressable>
           )}
+        </View>
+      )}
+      {!telemetry && expanded && (
+        <View style={styles.expandPanel}>
+          <Text style={styles.expandText}>
+            {session.location} • Arrive 10 min early • All levels welcome • Equipment provided
+          </Text>
         </View>
       )}
     </View>
@@ -381,6 +450,7 @@ const styles = StyleSheet.create({
     fontSize: theme.fontSize.small,
     fontWeight: theme.fontWeight.bold,
     color: theme.colors.text,
+    flexShrink: 1,
   },
   sessionDur: { color: theme.colors.textSecondary, fontWeight: theme.fontWeight.regular },
   badge: {
@@ -388,6 +458,7 @@ const styles = StyleSheet.create({
     borderRadius: theme.radii.pill,
     paddingHorizontal: theme.spacing.md,
     paddingVertical: 5,
+    flexShrink: 0,
   },
   badgeRust: { backgroundColor: theme.colors.rustTint },
   badgeBlue: {
@@ -416,7 +487,7 @@ const styles = StyleSheet.create({
     paddingTop: theme.spacing.lg,
   },
   coachPhoto: { width: 40, height: 40, borderRadius: 20, backgroundColor: theme.colors.surfaceAlt },
-  coachMain: { flex: 1 },
+  coachMain: { flex: 1, minWidth: 0 },
   coachName: { fontSize: theme.fontSize.small, fontWeight: theme.fontWeight.semibold, color: theme.colors.text },
   coachRole: { fontSize: 11, color: theme.colors.textSecondary, marginTop: 1 },
   rightStats: { alignItems: 'flex-end' },
@@ -454,9 +525,28 @@ const styles = StyleSheet.create({
     paddingVertical: theme.spacing.md,
     gap: theme.spacing.md,
   },
-  vo2Left: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm },
-  vo2Label: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary },
-  vo2Value: { fontSize: theme.fontSize.caption, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
+  vo2Left: { flexDirection: 'row', alignItems: 'center', gap: theme.spacing.sm, flexShrink: 1 },
+  vo2Label: { fontSize: theme.fontSize.caption, color: theme.colors.textSecondary, flexShrink: 1 },
+  vo2Value: {
+    fontSize: theme.fontSize.caption,
+    fontWeight: theme.fontWeight.bold,
+    color: theme.colors.text,
+    flexShrink: 0,
+  },
+  expandPanel: {
+    backgroundColor: theme.colors.surfaceAlt,
+    borderRadius: theme.radii.md,
+    padding: theme.spacing.lg,
+    marginTop: theme.spacing.lg,
+  },
+  expandText: {
+    fontSize: theme.fontSize.small,
+    color: theme.colors.textSecondary,
+    lineHeight: 19,
+  },
+  expandPanelOnAlt: { backgroundColor: theme.colors.surface },
+  detailsBtnActive: { backgroundColor: theme.colors.accentTint },
+  detailsLabelActive: { color: theme.colors.accent },
   telemetryFoot: {
     flexDirection: 'row',
     alignItems: 'center',
