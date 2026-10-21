@@ -12,11 +12,20 @@ interface RingProps {
   value: number;
   size?: number;
   strokeWidth?: number;
+  color?: string;
+  trackColor?: string;
   children?: React.ReactNode;
 }
 
-/** Flat progress ring in the single accent. Sweeps once on mount. */
-export function Ring({ value, size = 96, strokeWidth = 9, children }: RingProps) {
+/** Flat progress ring. Sweeps once on mount; color/track overridable per design. */
+export function Ring({
+  value,
+  size = 96,
+  strokeWidth = 9,
+  color = theme.colors.accent,
+  trackColor = theme.colors.surfaceAlt,
+  children,
+}: RingProps) {
   const r = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * r;
   const progress = useSharedValue(0);
@@ -36,7 +45,7 @@ export function Ring({ value, size = 96, strokeWidth = 9, children }: RingProps)
           cx={size / 2}
           cy={size / 2}
           r={r}
-          stroke={theme.colors.surfaceAlt}
+          stroke={trackColor}
           strokeWidth={strokeWidth}
           fill="none"
         />
@@ -44,7 +53,7 @@ export function Ring({ value, size = 96, strokeWidth = 9, children }: RingProps)
           cx={size / 2}
           cy={size / 2}
           r={r}
-          stroke={theme.colors.accent}
+          stroke={color}
           strokeWidth={strokeWidth}
           fill="none"
           strokeLinecap="round"
