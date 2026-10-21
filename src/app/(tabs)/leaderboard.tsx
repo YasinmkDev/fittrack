@@ -8,9 +8,29 @@ import { AppHeader } from '../../components/AppHeader';
 import { CONTENDERS, TOURNAMENT, TRAINERS } from '../../data/apex';
 import { theme } from '../../theme/theme';
 
+const MORE_TRAINERS = [
+  {
+    rank: 4,
+    name: 'Nina Alvarez',
+    role: 'Yoga & Mobility',
+    photo: 'https://randomuser.me/api/portraits/women/17.jpg',
+    earnings: '$5,940',
+    retention: '91% Ret.',
+  },
+  {
+    rank: 5,
+    name: 'Tom Becker',
+    role: 'Conditioning',
+    photo: 'https://randomuser.me/api/portraits/men/41.jpg',
+    earnings: '$5,410',
+    retention: '90% Ret.',
+  },
+];
+
 /** Leaderboard — recreated exactly from the owner's reference design. */
 export default function LeaderboardScreen() {
   const [launched, setLaunched] = useState(false);
+  const [fameExpanded, setFameExpanded] = useState(false);
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -53,7 +73,14 @@ export default function LeaderboardScreen() {
         <AnimatedIn index={1}>
           <View style={styles.fameHead}>
             <Text style={styles.h2}>Trainer Hall of Fame</Text>
-            <Text style={styles.viewAll}>View All ›</Text>
+            <Pressable
+              onPress={() => setFameExpanded((v) => !v)}
+              accessibilityRole="button"
+              accessibilityState={{ expanded: fameExpanded }}
+              accessibilityLabel={fameExpanded ? 'Show fewer trainers' : 'View all trainers'}
+              hitSlop={8}>
+              <Text style={styles.viewAll}>{fameExpanded ? 'Show Less ›' : 'View All ›'}</Text>
+            </Pressable>
           </View>
           <Text style={styles.fameSub}>October Performance Metrics</Text>
         </AnimatedIn>
@@ -74,10 +101,16 @@ export default function LeaderboardScreen() {
                 <Text style={styles.leaderBadgeText}>#1 Leader</Text>
               </View>
               <Image source={{ uri: TRAINERS.leader.photo }} style={styles.leaderPhoto} />
-              <Text style={styles.leaderName}>{TRAINERS.leader.name}</Text>
-              <Text style={styles.leaderRole}>{TRAINERS.leader.role}</Text>
+              <Text style={styles.leaderName} numberOfLines={1} adjustsFontSizeToFit>
+                {TRAINERS.leader.name}
+              </Text>
+              <Text style={styles.leaderRole} numberOfLines={1}>
+                {TRAINERS.leader.role}
+              </Text>
               <View style={styles.cardDivider} />
-              <Text style={styles.leaderEarnings}>{TRAINERS.leader.earnings}</Text>
+              <Text style={styles.leaderEarnings} numberOfLines={1} adjustsFontSizeToFit>
+                {TRAINERS.leader.earnings}
+              </Text>
               <Text style={styles.leaderRetention}>{TRAINERS.leader.retention}</Text>
             </View>
             <PodiumCard
@@ -90,6 +123,31 @@ export default function LeaderboardScreen() {
             />
           </View>
         </AnimatedIn>
+
+        {fameExpanded && (
+          <AnimatedIn index={3}>
+            <View style={[styles.card, styles.moreCard]}>
+              {MORE_TRAINERS.map((t, i) => (
+                <View key={t.rank} style={[styles.moreRow, i > 0 && styles.rowDivider]}>
+                  <Text style={styles.rank}>{t.rank}</Text>
+                  <Image source={{ uri: t.photo }} style={styles.contenderPhoto} />
+                  <View style={styles.contenderMain}>
+                    <Text style={styles.contenderName} numberOfLines={1}>
+                      {t.name}
+                    </Text>
+                    <Text style={styles.contenderSessions}>{t.role}</Text>
+                  </View>
+                  <View style={styles.xpCol}>
+                    <Text style={styles.xp} numberOfLines={1}>
+                      {t.earnings}
+                    </Text>
+                    <Text style={styles.xpNote}>{t.retention}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          </AnimatedIn>
+        )}
 
         <AnimatedIn index={3}>
           <View style={styles.card}>
@@ -104,11 +162,15 @@ export default function LeaderboardScreen() {
                 <Text style={styles.rank}>{c.rank}</Text>
                 <Image source={{ uri: c.photo }} style={styles.contenderPhoto} />
                 <View style={styles.contenderMain}>
-                  <Text style={styles.contenderName}>{c.name}</Text>
+                  <Text style={styles.contenderName} numberOfLines={1}>
+                    {c.name}
+                  </Text>
                   <Text style={styles.contenderSessions}>{c.sessions}</Text>
                 </View>
                 <View style={styles.xpCol}>
-                  <Text style={[styles.xp, c.rank === 1 && styles.xpBlue]}>{c.xp}</Text>
+                  <Text style={[styles.xp, c.rank === 1 && styles.xpBlue]} numberOfLines={1}>
+                    {c.xp}
+                  </Text>
                   <Text style={[styles.xpNote, c.xpNoteRust && styles.xpNoteRust]}>
                     {c.xpNote}
                   </Text>
@@ -174,10 +236,16 @@ function PodiumCard({
           <Text style={styles.rankBadgeText}>{rank}</Text>
         </View>
       </View>
-      <Text style={styles.sideName}>{name}</Text>
-      <Text style={styles.sideRole}>{role}</Text>
+      <Text style={styles.sideName} numberOfLines={1} adjustsFontSizeToFit>
+        {name}
+      </Text>
+      <Text style={styles.sideRole} numberOfLines={1}>
+        {role}
+      </Text>
       <View style={styles.cardDivider} />
-      <Text style={styles.sideEarnings}>{earnings}</Text>
+      <Text style={styles.sideEarnings} numberOfLines={1} adjustsFontSizeToFit>
+        {earnings}
+      </Text>
       <Text style={styles.sideRetention}>{retention}</Text>
     </View>
   );
@@ -239,7 +307,12 @@ const styles = StyleSheet.create({
     gap: theme.spacing.sm,
     padding: theme.spacing.lg,
   },
-  prizeText: { color: '#FFFFFF', fontSize: 17, fontWeight: theme.fontWeight.extrabold },
+  prizeText: {
+    color: '#FFFFFF',
+    fontSize: 17,
+    fontWeight: theme.fontWeight.extrabold,
+    flexShrink: 1,
+  },
   progressHead: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -309,6 +382,8 @@ const styles = StyleSheet.create({
     fontWeight: theme.fontWeight.bold,
     color: theme.colors.text,
     marginTop: theme.spacing.md,
+    alignSelf: 'stretch',
+    textAlign: 'center',
   },
   sideRole: { fontSize: 11, color: theme.colors.textSecondary, marginTop: 2 },
   cardDivider: {
@@ -317,7 +392,13 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.border,
     marginVertical: theme.spacing.md,
   },
-  sideEarnings: { fontSize: 16, fontWeight: theme.fontWeight.extrabold, color: theme.colors.text },
+  sideEarnings: {
+    fontSize: 16,
+    fontWeight: theme.fontWeight.extrabold,
+    color: theme.colors.text,
+    alignSelf: 'stretch',
+    textAlign: 'center',
+  },
   sideRetention: { fontSize: 11, color: theme.colors.textSecondary, marginTop: 3 },
   leaderCard: {
     flex: 1.12,
@@ -348,9 +429,17 @@ const styles = StyleSheet.create({
     fontWeight: theme.fontWeight.bold,
     color: theme.colors.text,
     marginTop: theme.spacing.md,
+    alignSelf: 'stretch',
+    textAlign: 'center',
   },
   leaderRole: { fontSize: 11, fontWeight: theme.fontWeight.semibold, color: theme.colors.rust, marginTop: 2 },
-  leaderEarnings: { fontSize: 19, fontWeight: theme.fontWeight.extrabold, color: theme.colors.text },
+  leaderEarnings: {
+    fontSize: 19,
+    fontWeight: theme.fontWeight.extrabold,
+    color: theme.colors.text,
+    alignSelf: 'stretch',
+    textAlign: 'center',
+  },
   leaderRetention: {
     fontSize: 11,
     fontWeight: theme.fontWeight.semibold,
@@ -380,7 +469,14 @@ const styles = StyleSheet.create({
   rowDivider: { borderTopWidth: 1, borderTopColor: theme.colors.border },
   rank: { fontSize: 17, fontWeight: theme.fontWeight.extrabold, color: theme.colors.text, width: 20 },
   contenderPhoto: { width: 42, height: 42, borderRadius: 21, backgroundColor: theme.colors.surfaceAlt },
-  contenderMain: { flex: 1 },
+  contenderMain: { flex: 1, minWidth: 0 },
+  moreCard: { marginTop: theme.spacing.lg, paddingVertical: theme.spacing.sm },
+  moreRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: theme.spacing.md,
+    paddingVertical: theme.spacing.lg,
+  },
   contenderName: { fontSize: theme.fontSize.body, fontWeight: theme.fontWeight.bold, color: theme.colors.text },
   contenderSessions: { fontSize: 11, color: theme.colors.textSecondary, marginTop: 2 },
   xpCol: { alignItems: 'flex-end' },
