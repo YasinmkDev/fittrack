@@ -89,7 +89,8 @@ export default function HomeScreen() {
               accessibilityRole="button"
               accessibilityLabel="Notifications and Pro"
               style={styles.bell}
-              hitSlop={8}>
+              hitSlop={8}
+            >
               <Bell size={21} color={theme.colors.text} />
               <View style={styles.dot} />
             </Pressable>
@@ -106,9 +107,7 @@ export default function HomeScreen() {
               </View>
               <View style={styles.streakChip}>
                 <Flame size={13} color={theme.colors.accent} />
-                <Text style={styles.streakChipText}>
-                  {GYM.ownerStreakDays}-day owner streak
-                </Text>
+                <Text style={styles.streakChipText}>{GYM.ownerStreakDays}-day owner streak</Text>
               </View>
             </View>
             <View style={styles.heroCountRow}>
@@ -120,13 +119,15 @@ export default function HomeScreen() {
             </Text>
             <View style={styles.heroGoalRow}>
               <Ring value={inGym / GYM.floorGoal} size={64} strokeWidth={6}>
-                <Text style={styles.heroRingText}>{Math.round((inGym / GYM.floorGoal) * 100)}%</Text>
+                <Text style={styles.heroRingText}>
+                  {Math.round((inGym / GYM.floorGoal) * 100)}%
+                </Text>
               </Ring>
               <View style={styles.heroGoalMain}>
                 <Text style={styles.heroGoalTitle}>Floor goal: {GYM.floorGoal} by 8 PM</Text>
                 <Text style={styles.heroGoalSub}>
-                  {GYM.floorGoal - inGym} more members puts you past it. Every check-in below
-                  moves this ring.
+                  {GYM.floorGoal - inGym} more members puts you past it. Every check-in below moves
+                  this ring.
                 </Text>
               </View>
             </View>
@@ -155,10 +156,7 @@ export default function HomeScreen() {
 
         {/* ---------- MISSIONS: the addictive layer ---------- */}
         <AnimatedIn index={2}>
-          <SectionTitle
-            kicker="Habit loop"
-            title={`Today's missions — ${missionsDone} of 3`}
-          />
+          <SectionTitle kicker="Habit loop" title={`Today's missions — ${missionsDone} of 3`} />
           <Card padded={false} style={styles.missionCard}>
             <MissionRow
               done={checkinMissionDone}
@@ -223,7 +221,8 @@ export default function HomeScreen() {
                     accessibilityLabel={
                       isIn ? `${member.name} checked in` : `Check in ${member.name}`
                     }
-                    style={[styles.checkinBtn, isIn && styles.checkinBtnDone]}>
+                    style={[styles.checkinBtn, isIn && styles.checkinBtnDone]}
+                  >
                     {isIn ? (
                       <Check size={16} color="#FFFFFF" strokeWidth={3} />
                     ) : (
@@ -248,7 +247,8 @@ export default function HomeScreen() {
                   onPress={openRecommendation}
                   accessibilityRole="button"
                   accessibilityLabel={recommendation.actionLabel}
-                  style={styles.recPrimary}>
+                  style={styles.recPrimary}
+                >
                   <Text style={styles.recPrimaryLabel}>{recommendation.actionLabel}</Text>
                   <ChevronRight size={15} color="#FFFFFF" />
                 </Pressable>
@@ -256,20 +256,21 @@ export default function HomeScreen() {
                   onPress={() => setRecIndex((i) => i + 1)}
                   accessibilityRole="button"
                   accessibilityLabel="Dismiss this recommendation"
-                  style={styles.recDismiss}>
+                  style={styles.recDismiss}
+                >
                   <X size={15} color={theme.colors.textSecondary} />
                   <Text style={styles.recDismissLabel}>Not now</Text>
                 </Pressable>
               </View>
               <Text style={styles.recCounter}>
-                {recIndex + 1} of {RECOMMENDATIONS.length} · refreshes from tonight's data
+                {recIndex + 1} of {RECOMMENDATIONS.length} · refreshes from tonight’s data
               </Text>
             </Card>
           ) : (
             <Card>
-              <Text style={styles.recTitle}>You're all caught up</Text>
+              <Text style={styles.recTitle}>You’re all caught up</Text>
               <Text style={styles.recReason}>
-                No more moves worth your time today. New recommendations generate from tonight's
+                No more moves worth your time today. New recommendations generate from tonight’s
                 check-ins and payments.
               </Text>
             </Card>
@@ -358,7 +359,8 @@ export default function HomeScreen() {
             onPress={() => router.push('/paywall')}
             accessibilityRole="button"
             accessibilityLabel="Upgrade to FitTrack Pro"
-            style={({ pressed }) => [styles.proBanner, pressed && styles.pressed]}>
+            style={({ pressed }) => [styles.proBanner, pressed && styles.pressed]}
+          >
             <Sparkles size={19} color={theme.colors.accentDark} />
             <View style={styles.proMain}>
               <Text style={styles.proTitle}>Free plan — 200 member limit reached soon</Text>
@@ -397,7 +399,8 @@ function MissionRow({
         accessibilityRole="checkbox"
         accessibilityState={{ checked: done }}
         accessibilityLabel={title}
-        style={[styles.missionBox, done && styles.missionBoxDone]}>
+        style={[styles.missionBox, done && styles.missionBoxDone]}
+      >
         {done && <Check size={15} color="#FFFFFF" strokeWidth={3} />}
       </Pressable>
       <View style={styles.missionMain}>
@@ -435,7 +438,8 @@ function AttentionRow({
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={title}
-      style={[styles.attentionRow, divider && styles.attentionDivider]}>
+      style={[styles.attentionRow, divider && styles.attentionDivider]}
+    >
       <View style={[styles.attentionIcon, { backgroundColor: tint }]}>{icon}</View>
       <View style={styles.attentionMain}>
         <Text style={styles.attentionTitle} numberOfLines={2}>

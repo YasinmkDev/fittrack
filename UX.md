@@ -73,3 +73,52 @@ busy front desk. His jobs, in his words:
   as a first-class card ✓ · all proof numbers are the gym's own data ✓
 - Craft: references in DESIGN.md ✓ · tokens only ✓ · states designed ✓ · ≥44pt targets
   on all new controls ✓ · no dark patterns, no gradient/neon ✓
+
+---
+
+## 6. v3 addendum — the owner's verdict on v2, and the response (2026-10-20)
+
+**Verdict (user, after using v2 on his phone):** "no algorithmic intimacy or viral UX or
+addictive design, plain white screens, no visual hierarchy or text hierarchy."
+
+He was right, and the lesson is recorded here so it is not repeated: **a strategy that
+exists only as a static text card is not implemented.** In v2 the intimacy was a paragraph,
+the viral loop was a picture of a card, the Hook loop was three buttons on one screen, and
+every surface shared the same white, weight, and type size — so on a real phone it read as
+a plain document, not a product.
+
+### What v3 changes
+
+**Hierarchy (visual + type).** A flat ink hero anchors Home: LIVE FLOOR kicker in caps
+orange, a 56px extrabold floor count, goal ring, white-on-ink stats — one dark surface
+against the paper canvas (flat color, still no gradients/glow). Type scale is now a real
+ladder: hero 56 / display 32 / title 21 extrabold / section 17 extrabold with orange caps
+kickers as the middle layer / body 15 / caption 13. Screen headers gained kickers
+("Your people", "The money", "Classes & coaching").
+
+**Addictive design, honestly built (Hook).** Daily missions on Home: three per day —
+check-ins complete automatically from the desk row, fee collection and a reminder are
+owner-confirmed — with a Perfect Day peak-end state and a visible owner streak (6 days)
+in the hero. The floor-goal ring fills with every check-in, so the reward is continuous,
+not only at completion. Mercy rule from the Playbook applies: streaks are the owner's,
+members keep freeze protection.
+
+**Algorithmic intimacy, made visible.** A "For You · from your data" recommendation card:
+a specific next move with its reason stated ("She has renewed Quarterly three times…"),
+a working primary action, and dismiss-to-next until the honest end state ("You're all
+caught up — new ones generate tonight"). Plus the one-line gym insight (kept from v2).
+
+**Viral UX, actually wired.** The progress card's button opens the native share sheet
+with a composed message; its sent state names the loop. Members opens with an ink invite
+card — Give Rs 500, get Rs 500 — sharing through the same native sheet (two-sided
+reciprocity per the Playbook).
+
+**Interactivity inventory (v3).** One-tap check-in (counts animate) · missions with
+auto + manual completion · recommendation dismiss cycle · tappable attendance bars with
+per-day detail · class Book spot → full → waitlist states · fee Collect buttons that move
+the Payments totals and progress live · member name search · native share on both viral
+surfaces · animated list filtering (v2) · spring entrances throughout (v2).
+
+**Honest limits.** Interactive state is per-screen demo state (collecting a fee on
+Payments does not yet complete the Home mission automatically) — the live backend
+(Supabase, per README) is what unifies them. Recorded here rather than hidden.

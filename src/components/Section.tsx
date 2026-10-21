@@ -24,7 +24,8 @@ export function SectionTitle({ title, kicker, actionLabel, onAction }: SectionTi
           accessibilityRole="button"
           accessibilityLabel={actionLabel}
           style={styles.action}
-          hitSlop={8}>
+          hitSlop={8}
+        >
           <Text style={styles.actionLabel}>{actionLabel}</Text>
           <ChevronRight size={15} color={theme.colors.accent} />
         </Pressable>

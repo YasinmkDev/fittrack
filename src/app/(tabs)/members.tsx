@@ -108,14 +108,15 @@ export default function MembersScreen() {
             <Text style={styles.inviteKicker}>GROW THE GYM</Text>
             <Text style={styles.inviteTitle}>Give Rs 500, get Rs 500</Text>
             <Text style={styles.inviteText}>
-              Members who invite a friend train longer. Send your invite — the Rs 500 lands on
-              both plans when they join.
+              Members who invite a friend train longer. Send your invite — the Rs 500 lands on both
+              plans when they join.
             </Text>
             <Pressable
               onPress={shareInvite}
               accessibilityRole="button"
               accessibilityLabel="Share gym invite"
-              style={styles.inviteBtn}>
+              style={styles.inviteBtn}
+            >
               <Share2 size={15} color={theme.colors.ink} />
               <Text style={styles.inviteBtnLabel}>Share invite</Text>
             </Pressable>

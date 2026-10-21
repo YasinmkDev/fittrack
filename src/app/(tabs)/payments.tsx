@@ -80,7 +80,8 @@ export default function PaymentsScreen() {
                     onPress={() => router.push(`/member/${member.id}`)}
                     accessibilityRole="button"
                     accessibilityLabel={`Open ${member.name}`}
-                    style={styles.dueTapArea}>
+                    style={styles.dueTapArea}
+                  >
                     <Avatar name={member.name} size={40} />
                     <View style={styles.dueMain}>
                       <Text style={styles.dueName} numberOfLines={1}>
@@ -103,7 +104,8 @@ export default function PaymentsScreen() {
                       onPress={() => collect(member.id)}
                       accessibilityRole="button"
                       accessibilityLabel={`Collect ${rs(due)} from ${member.name}`}
-                      style={styles.collectBtn}>
+                      style={styles.collectBtn}
+                    >
                       <Text style={styles.collectBtnLabel}>Collect {rsCompact(due)}</Text>
                     </Pressable>
                   )}

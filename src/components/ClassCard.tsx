@@ -52,7 +52,9 @@ export function ClassCard({ gymClass }: ClassCardProps) {
       <View style={styles.progressWrap}>
         <ProgressBar
           value={pct}
-          color={full ? theme.colors.danger : almostFull ? theme.colors.warning : theme.colors.accent}
+          color={
+            full ? theme.colors.danger : almostFull ? theme.colors.warning : theme.colors.accent
+          }
           height={5}
         />
       </View>
@@ -67,7 +69,8 @@ export function ClassCard({ gymClass }: ClassCardProps) {
               onPress={book}
               accessibilityRole="button"
               accessibilityLabel={`Book a spot in ${gymClass.name}`}
-              style={styles.bookBtn}>
+              style={styles.bookBtn}
+            >
               <Plus size={14} color="#FFFFFF" strokeWidth={3} />
               <Text style={styles.bookBtnLabel}>Book spot</Text>
             </Pressable>
@@ -81,7 +84,8 @@ export function ClassCard({ gymClass }: ClassCardProps) {
               onPress={joinWaitlist}
               accessibilityRole="button"
               accessibilityLabel={`Join waitlist for ${gymClass.name}`}
-              style={styles.waitlistBtn}>
+              style={styles.waitlistBtn}
+            >
               <Text style={styles.waitlistBtnLabel}>Join waitlist</Text>
             </Pressable>
           ))}

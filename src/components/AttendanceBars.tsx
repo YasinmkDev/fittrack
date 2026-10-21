@@ -103,7 +103,8 @@ function Bar({
       accessibilityRole="button"
       accessibilityState={{ selected: isSelected }}
       accessibilityLabel={`${label}: ${value} check-ins`}
-      style={styles.barWrap}>
+      style={styles.barWrap}
+    >
       <Text style={[styles.value, isSelected && styles.valueSelected]}>{value}</Text>
       <Animated.View style={[styles.bar, { backgroundColor: color }, barStyle]} />
     </Pressable>
