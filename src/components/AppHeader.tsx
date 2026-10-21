@@ -1,4 +1,5 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { router } from 'expo-router';
 import { CircleUserRound, Expand } from 'lucide-react-native';
 
 import { STUDIO } from '../data/apex';
@@ -12,7 +13,13 @@ export function AppHeader() {
         <Expand size={21} color={theme.colors.accent} strokeWidth={2.4} />
         <Text style={styles.wordmark}>{STUDIO.name}</Text>
       </View>
-      <CircleUserRound size={27} color={theme.colors.text} strokeWidth={1.6} />
+      <Pressable
+        onPress={() => router.push('/auth')}
+        accessibilityRole="button"
+        accessibilityLabel="Account"
+        hitSlop={8}>
+        <CircleUserRound size={27} color={theme.colors.text} strokeWidth={1.6} />
+      </Pressable>
     </View>
   );
 }
