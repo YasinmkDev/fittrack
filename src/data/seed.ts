@@ -402,7 +402,60 @@ export const GYM = {
     'Evenings are your power hours — most check-ins land between 5 and 8 PM. Saturday is your biggest day, and Imran Ullah is the only regular who has gone quiet this month.',
   /** Members expected at the desk now — the one-tap check-in row. */
   expectedNowIds: ['m7', 'm2', 'm4'],
+  /** Floor goal the owner set for peak hours — the hero ring fills toward it. */
+  floorGoal: 40,
+  /** Consecutive days the owner hit all daily missions. */
+  ownerStreakDays: 6,
+  /** Detail line per attendance day (Mon..Sun), for the tappable chart. */
+  attendanceDetails: [
+    '64 check-ins · quiet start, mornings only',
+    '78 check-ins · ladies batch carried the day',
+    '71 check-ins · rain kept the evening crowd home',
+    '92 check-ins · powerlifting club was packed',
+    '84 check-ins · steady Friday, PT slots full',
+    '96 check-ins · biggest day — Saturday crowd',
+    '86 check-ins so far · peak still to come, 5–8 PM',
+  ],
 };
+
+export interface Recommendation {
+  id: string;
+  title: string;
+  reason: string;
+  actionLabel: string;
+  route: 'member' | 'payments' | 'join';
+  targetId?: string;
+}
+
+/** Algorithmic intimacy, made visible: computed-style next actions for this owner. */
+export const RECOMMENDATIONS: Recommendation[] = [
+  {
+    id: 'r1',
+    title: 'Offer Fatima the Annual plan today',
+    reason:
+      'She has renewed Quarterly three times and trains 14× a month. Annual saves her Rs 2,000 and locks her in for a year.',
+    actionLabel: 'Open her page',
+    route: 'member',
+    targetId: 'm2',
+  },
+  {
+    id: 'r2',
+    title: 'Collect Maryam’s Rs 10,000 balance this week',
+    reason:
+      'Her installment pattern is the 17th–20th. A reminder today lands exactly when she usually pays.',
+    actionLabel: 'See payments',
+    route: 'payments',
+  },
+  {
+    id: 'r3',
+    title: 'Move Daniyal to Quarterly at renewal',
+    reason:
+      'First month: 9 visits and a 3-week streak. New members who upgrade in month one stay twice as long.',
+    actionLabel: 'Open his page',
+    route: 'member',
+    targetId: 'm7',
+  },
+];
 
 export function planById(id: string): Plan {
   return PLANS.find((p) => p.id === id) ?? PLANS[0];

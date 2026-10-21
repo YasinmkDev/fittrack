@@ -5,22 +5,26 @@ import { theme } from '../theme/theme';
 
 interface SectionTitleProps {
   title: string;
+  /** Small orange caps label above the title — the hierarchy's middle layer. */
+  kicker?: string;
   actionLabel?: string;
   onAction?: () => void;
 }
 
-export function SectionTitle({ title, actionLabel, onAction }: SectionTitleProps) {
+export function SectionTitle({ title, kicker, actionLabel, onAction }: SectionTitleProps) {
   return (
     <View style={styles.row}>
-      <Text style={styles.title}>{title}</Text>
+      <View style={styles.main}>
+        {kicker && <Text style={styles.kicker}>{kicker}</Text>}
+        <Text style={styles.title}>{title}</Text>
+      </View>
       {actionLabel && onAction && (
         <Pressable
           onPress={onAction}
           accessibilityRole="button"
           accessibilityLabel={actionLabel}
           style={styles.action}
-          hitSlop={8}
-        >
+          hitSlop={8}>
           <Text style={styles.actionLabel}>{actionLabel}</Text>
           <ChevronRight size={15} color={theme.colors.accent} />
         </Pressable>
@@ -32,15 +36,26 @@ export function SectionTitle({ title, actionLabel, onAction }: SectionTitleProps
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
+    gap: theme.spacing.md,
     marginBottom: theme.spacing.md,
     marginTop: theme.spacing.xxl,
   },
+  main: { flex: 1 },
+  kicker: {
+    fontSize: 11,
+    fontWeight: theme.fontWeight.bold,
+    letterSpacing: 1.4,
+    color: theme.colors.accent,
+    textTransform: 'uppercase',
+    marginBottom: 3,
+  },
   title: {
     fontSize: theme.fontSize.section,
-    fontWeight: theme.fontWeight.semibold,
+    fontWeight: theme.fontWeight.extrabold,
     color: theme.colors.text,
+    letterSpacing: -0.2,
   },
   action: { flexDirection: 'row', alignItems: 'center', gap: 2, minHeight: 32 },
   actionLabel: {
